@@ -24,6 +24,10 @@ type omdbInfo struct {
 	Plot   string
 }
 
+/*type httpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}*/
+
 func main() {
 	lambda.Start(Handler)
 }
@@ -35,23 +39,15 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		fmt.Printf("    %s: %s\n", key, value)
 	}
 
-	fmt.Println("headers:")
-	for key, value := range request.Headers {
-		fmt.Printf("    %s: %s\n", key, value)
-	}
-
 	movieId := getImdbIdFromMovieName(request.QueryStringParameters["movieName"])
 	recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
-	fmt.Println("Final List of Recommended Movies: ", recommendedMoviesIdList)
-
-	var recommendedMoviesDetailedList [5]string
+	var recommendedMoviesDetailedList [5]omdbInfo
 	for ind, element := range recommendedMoviesIdList {
 		if element != "" {
-			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element).Title
+			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
 		}
 	}
-
 	fmt.Println("Final List of Recommended Movies: ", recommendedMoviesDetailedList)
 
 	movieListJson, err := json.Marshal(recommendedMoviesDetailedList)
@@ -62,6 +58,8 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			Body:       "An error occurred while parsing movie list to JSON",
 		}, err
 	}
+
+	fmt.Println("All Movies in Json ", string(movieListJson))
 
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
@@ -75,7 +73,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 func getOmdbMovieInfo(omdbURL string) omdbInfo {
 	var ombdInfo omdbInfo
-	//omdbURL := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
 	response, err := http.Get(omdbURL)
 
 	if err != nil {
@@ -100,6 +97,7 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 
 func getOmdbDetailedInfoFromId(movieID string) omdbInfo{
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
+	fmt.Printf("Getting detailed movie info from OMDB for movie id %s", movieID)
 	omdbFilmInfo:= getOmdbMovieInfo(url)
 	return omdbFilmInfo
 }
@@ -107,11 +105,11 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo{
 func getImdbIdFromMovieName(movieName string) string {
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
 	omdbFilmInfo:= getOmdbMovieInfo(url)
-
+	fmt.Printf("OMDB movie id for movieName %s -> %s ", movieName, omdbFilmInfo.ImdbID)
 	return omdbFilmInfo.ImdbID
 }
 
-func readImdbPageSource(url string) [6]string {
+func readImdbPageSource(url string) [5]string {
 	resp, _ := http.Get(url)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
@@ -119,9 +117,9 @@ func readImdbPageSource(url string) [6]string {
 	return recommendedLinkList
 }
 
-func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [6]string {
+func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 	var foundFags bool
-	var recommendedMoviesIdsList [6]string
+	var recommendedMoviesIdsList [5]string
 	count := 0
 
 	z := html.NewTokenizer(source)
@@ -140,11 +138,10 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [6]string {
 			if isAnchor {
 				for _, a := range t.Attr {
 					if a.Key == "href" {
-						//fmt.Println("Found href:", a.Val)
 						if foundFags {
 							recommendedMoviesIdsList[count] = extractMovieIdFromTitleLink(a.Val)
 							count += 1
-							if count == 5 {
+							if count == 4 {
 								return recommendedMoviesIdsList
 							}
 							break
