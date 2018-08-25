@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/events"
 	"context"
+	"github.com/go-redis/redis"
 )
 
 type omdbInfo struct {
@@ -23,10 +24,6 @@ type omdbInfo struct {
 	Year   string
 	Plot   string
 }
-
-/*type httpClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}*/
 
 func main() {
 	lambda.Start(Handler)
@@ -66,9 +63,8 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Body:       string(movieListJson),
-		Headers: headers,
+		Headers:    headers,
 	}, nil
-	//return recommendedMoviesIdList, nil
 }
 
 func getOmdbMovieInfo(omdbURL string) omdbInfo {
@@ -88,23 +84,48 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 
 		jsonErr := json.Unmarshal(contents, &ombdInfo)
 		if jsonErr != nil {
-			log.Fatal(jsonErr)
+			panic(jsonErr)
 		}
 		log.Printf("title %s and IMDB ID %s", ombdInfo.Title, ombdInfo.ImdbID)
 	}
 	return ombdInfo
 }
 
-func getOmdbDetailedInfoFromId(movieID string) omdbInfo{
-	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
-	fmt.Printf("Getting detailed movie info from OMDB for movie id %s", movieID)
-	omdbFilmInfo:= getOmdbMovieInfo(url)
+func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
+	redisCache := redisClient()
+	cachedMovie, err := redisCache.Get(movieID).Bytes()
+	var omdbFilmInfo omdbInfo
+	if err == redis.Nil {
+		fmt.Printf("%s does not exist in the cache, caching..", movieID)
+		url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
+		fmt.Printf("Getting detailed movie info from OMDB for movie id %s", movieID)
+		omdbFilmInfo = getOmdbMovieInfo(url)
+
+		moviePayloadInJson, err := json.Marshal(omdbFilmInfo)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		error := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
+		if error != nil {
+			panic(error)
+		}
+
+	} else if err != nil {
+		panic(err)
+	} else {
+		fmt.Printf("movie with ID %s found in the cache -> %s", movieID, cachedMovie)
+		jsonErr := json.Unmarshal(cachedMovie, &omdbFilmInfo)
+		if jsonErr != nil {
+			panic(jsonErr)
+		}
+	}
 	return omdbFilmInfo
 }
 
 func getImdbIdFromMovieName(movieName string) string {
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
-	omdbFilmInfo:= getOmdbMovieInfo(url)
+	omdbFilmInfo := getOmdbMovieInfo(url)
 	fmt.Printf("OMDB movie id for movieName %s -> %s ", movieName, omdbFilmInfo.ImdbID)
 	return omdbFilmInfo.ImdbID
 }
@@ -172,4 +193,18 @@ func check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func redisClient() *redis.Client {
+	redisDB := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_URL") + ":6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	pong, err := redisDB.Ping().Result()
+	fmt.Println(pong, err)
+	// Output: PONG <nil>
+
+	return redisDB
 }

@@ -13,9 +13,13 @@ func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
 
 func TestHandler(t *testing.T) {
 	m := make(map[string]string)
-	m["movieName"] = "the+matrix"
+	m["movieName"] = "the+godfather"
 	request := events.APIGatewayProxyRequest{
 		QueryStringParameters: m,
 	}
 	Handler(nil, request)
+}
+
+func TestRedisClient(t *testing.T) {
+	redisClient()
 }
