@@ -56,8 +56,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}, err
 	}
 
-	fmt.Println("All Movies in Json ", string(movieListJson))
-
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
 	return events.APIGatewayProxyResponse{
@@ -69,24 +67,24 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 func getOmdbMovieInfo(omdbURL string) omdbInfo {
 	var ombdInfo omdbInfo
+	fmt.Printf("will try to get omdb info for %s", omdbURL)
 	response, err := http.Get(omdbURL)
 
 	if err != nil {
-		log.Printf("%s", err)
-		os.Exit(1)
+		fmt.Print(err)
+		//os.Exit(1)
 	} else {
 		defer response.Body.Close()
 		contents, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			fmt.Printf("%s", err)
-			os.Exit(1)
+			fmt.Print(err)
 		}
 
 		jsonErr := json.Unmarshal(contents, &ombdInfo)
 		if jsonErr != nil {
-			panic(jsonErr)
+			log.Print(jsonErr)
 		}
-		log.Printf("title %s and IMDB ID %s", ombdInfo.Title, ombdInfo.ImdbID)
+		fmt.Printf("title %s and IMDB ID %s", ombdInfo.Title, ombdInfo.ImdbID)
 	}
 	return ombdInfo
 }
@@ -106,18 +104,18 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 			fmt.Println(err)
 		}
 
-		error := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
-		if error != nil {
-			panic(error)
+		errCache := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
+		if errCache != nil {
+			log.Printf("An error occurred while trying to cache the element: %s", errCache)
 		}
 
 	} else if err != nil {
-		panic(err)
+		log.Printf("An error occurred while trying to connect to the cache: %s", err)
 	} else {
 		fmt.Printf("movie with ID %s found in the cache -> %s", movieID, cachedMovie)
 		jsonErr := json.Unmarshal(cachedMovie, &omdbFilmInfo)
 		if jsonErr != nil {
-			panic(jsonErr)
+			log.Print(jsonErr)
 		}
 	}
 	return omdbFilmInfo
@@ -132,6 +130,7 @@ func getImdbIdFromMovieName(movieName string) string {
 
 func readImdbPageSource(url string) [5]string {
 	resp, _ := http.Get(url)
+	fmt.Printf("IMDB Status code for url %s %s", url, resp.Status)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
 	fmt.Println("links list ", recommendedLinkList)
@@ -183,18 +182,6 @@ func extractMovieIdFromTitleLink(link string) string {
 	return r.FindStringSubmatch(link)[1]
 }
 
-func readFile(fileName string) io.Reader {
-	f, err := os.Open(fileName)
-	check(err)
-	return f
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func redisClient() *redis.Client {
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL") + ":6379",
@@ -204,7 +191,6 @@ func redisClient() *redis.Client {
 
 	pong, err := redisDB.Ping().Result()
 	fmt.Println(pong, err)
-	// Output: PONG <nil>
 
 	return redisDB
 }
