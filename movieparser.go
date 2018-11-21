@@ -15,7 +15,12 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"context"
 	"github.com/go-redis/redis"
+	"errors"
+	"github.com/ericdaugherty/alexa-skills-kit-golang"
 )
+
+const cardTitle = "movieSuggester"
+var alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.<SKILL_ID>", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
 
 type omdbInfo struct {
 	Title  string
@@ -26,7 +31,77 @@ type omdbInfo struct {
 }
 
 func main() {
-	lambda.Start(Handler)
+	lambda.Start(Handle)
+}
+
+type movieparser struct {
+}
+
+func Handle(ctx context.Context, requestEnv *alexa.RequestEnvelope) (interface{}, error) {
+	return alexaMetaData.ProcessRequest(ctx, requestEnv)
+}
+
+func (h *movieparser) OnSessionStarted(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+
+	log.Printf("OnSessionStarted requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+	return nil
+}
+
+func (h *movieparser) OnLaunch(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+	speechText := "Welcome to Urban Dictionary App. You can look up words by saying what's the meaning of followed by your query."
+
+	log.Printf("OnLaunch requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+
+	response.SetSimpleCard(cardTitle, speechText)
+	response.SetOutputText(speechText)
+	response.SetRepromptText(speechText)
+
+	response.ShouldSessionEnd = false
+
+	return nil
+}
+
+func (h *movieparser) OnIntent(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+
+	log.Printf("OnIntent requestId=%s, sessionId=%s, intent=%s", request.RequestID, session.SessionID, request.Intent.Name)
+	filmToSearch := request.Intent.Slots["movie"].Value
+
+	switch request.Intent.Name {
+	case "movieparserIntent":
+		log.Printf("movieparser Intent triggered with %s", filmToSearch)
+
+		movieId := getImdbIdFromMovieName(filmToSearch)
+		recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
+
+		var recommendedMoviesDetailedList [5]omdbInfo
+		for ind, element := range recommendedMoviesIdList {
+			if element != "" {
+				recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
+			}
+		}
+			response.SetSimpleCard(cardTitle,  recommendedMoviesDetailedList[0].Title)
+			response.SetOutputText("You might enjoy watching " + recommendedMoviesDetailedList[0].Title + " if you enjoyed " + filmToSearch)
+
+	case "AMAZON.HelpIntent":
+		log.Println("AMAZON.HelpIntent triggered")
+		speechText := "Use this app to learn the coolest slang words and phrases!"
+
+		response.SetSimpleCard(cardTitle, speechText)
+		response.SetOutputText(speechText)
+		response.SetRepromptText(speechText)
+
+	default:
+		return errors.New("Invalid Intent")
+	}
+
+	return nil
+}
+
+func (h *movieparser) OnSessionEnded(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+
+	log.Printf("OnSessionEnded requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+
+	return nil
 }
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -185,7 +260,7 @@ func extractMovieIdFromTitleLink(link string) string {
 func redisClient() *redis.Client {
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL") + ":6379",
-		Password: "", // no password set
+		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,  // use default DB
 	})
 
