@@ -17,10 +17,15 @@ import (
 	"github.com/go-redis/redis"
 	"errors"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
+	"strconv"
 )
 
 const cardTitle = "movieSuggester"
-var alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.<SKILL_ID>", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
+var(
+ alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.<SKILL_ID>", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
+ cacheOn = true
+
+)
 
 type omdbInfo struct {
 	Title  string
@@ -31,7 +36,13 @@ type omdbInfo struct {
 }
 
 func main() {
+	cacheSet, err := strconv.ParseBool(os.Getenv("CACHE_ENABLED"))
+	cacheOn = cacheSet
+	if err != nil {
+		log.Printf("Invalid env var CACHE_ENABLED: %s", os.Getenv("CACHE_ENABLED"))
+	}
 	lambda.Start(Handle)
+
 }
 
 type movieparser struct {
@@ -105,12 +116,6 @@ func (h *movieparser) OnSessionEnded(ctx context.Context,request *alexa.Request,
 }
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-
-	fmt.Println("query params:")
-	for key, value := range request.QueryStringParameters {
-		fmt.Printf("    %s: %s\n", key, value)
-	}
-
 	movieId := getImdbIdFromMovieName(request.QueryStringParameters["movieName"])
 	recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
@@ -120,7 +125,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
 		}
 	}
-	fmt.Println("Final List of Recommended Movies: ", recommendedMoviesDetailedList)
+
 
 	movieListJson, err := json.Marshal(recommendedMoviesDetailedList)
 	if err != nil {
@@ -131,6 +136,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}, err
 	}
 
+	fmt.Println("Final List of Recommended Movies: ", string(movieListJson))
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
 	return events.APIGatewayProxyResponse{
@@ -142,7 +148,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 func getOmdbMovieInfo(omdbURL string) omdbInfo {
 	var ombdInfo omdbInfo
-	fmt.Printf("will try to get omdb info for %s", omdbURL)
+	fmt.Printf("will try to get omdb info for %s\n", omdbURL)
 	response, err := http.Get(omdbURL)
 
 	if err != nil {
@@ -159,39 +165,45 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 		if jsonErr != nil {
 			log.Print(jsonErr)
 		}
-		fmt.Printf("title %s and IMDB ID %s", ombdInfo.Title, ombdInfo.ImdbID)
+		fmt.Printf("title %s and IMDB ID %s\n", ombdInfo.Title, ombdInfo.ImdbID)
 	}
 	return ombdInfo
 }
 
 func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 	redisCache := redisClient()
-	cachedMovie, err := redisCache.Get(movieID).Bytes()
 	var omdbFilmInfo omdbInfo
-	if err == redis.Nil {
-		fmt.Printf("%s does not exist in the cache, caching..", movieID)
-		url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
-		fmt.Printf("Getting detailed movie info from OMDB for movie id %s", movieID)
+	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
+
+	if cacheOn {
+		cachedMovie, err := redisCache.Get(movieID).Bytes()
+		if err == redis.Nil {
+			fmt.Printf("%s does not exist in the cache, caching..\n", movieID)
+			fmt.Printf("Getting detailed movie info from OMDB for movie id %s\n", movieID)
+			omdbFilmInfo = getOmdbMovieInfo(url)
+
+			moviePayloadInJson, err := json.Marshal(omdbFilmInfo)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			//Put the movie in the cache
+			errCache := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
+			if errCache != nil {
+				log.Printf("An error occurred while trying to cache the element: %s\n", errCache)
+			}
+
+		} else if err != nil {
+			log.Printf("An error occurred while trying to connect to the cache: %s\n", err)
+		} else {
+			fmt.Printf("movie with ID %s found in the cache -> %s\n", movieID, cachedMovie)
+			jsonErr := json.Unmarshal(cachedMovie, &omdbFilmInfo)
+			if jsonErr != nil {
+				log.Print(jsonErr)
+			}
+		}
+	} else { //no cache
 		omdbFilmInfo = getOmdbMovieInfo(url)
-
-		moviePayloadInJson, err := json.Marshal(omdbFilmInfo)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		errCache := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
-		if errCache != nil {
-			log.Printf("An error occurred while trying to cache the element: %s", errCache)
-		}
-
-	} else if err != nil {
-		log.Printf("An error occurred while trying to connect to the cache: %s", err)
-	} else {
-		fmt.Printf("movie with ID %s found in the cache -> %s", movieID, cachedMovie)
-		jsonErr := json.Unmarshal(cachedMovie, &omdbFilmInfo)
-		if jsonErr != nil {
-			log.Print(jsonErr)
-		}
 	}
 	return omdbFilmInfo
 }
@@ -199,13 +211,13 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 func getImdbIdFromMovieName(movieName string) string {
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
 	omdbFilmInfo := getOmdbMovieInfo(url)
-	fmt.Printf("OMDB movie id for movieName %s -> %s ", movieName, omdbFilmInfo.ImdbID)
+	fmt.Printf("OMDB movie id for movieName %s -> %s \n", movieName, omdbFilmInfo.ImdbID)
 	return omdbFilmInfo.ImdbID
 }
 
 func readImdbPageSource(url string) [5]string {
 	resp, _ := http.Get(url)
-	fmt.Printf("IMDB Status code for url %s %s", url, resp.Status)
+	fmt.Printf("IMDB Status code for url %s %s\n", url, resp.Status)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
 	fmt.Println("links list ", recommendedLinkList)
@@ -264,8 +276,12 @@ func redisClient() *redis.Client {
 		DB:       0,  // use default DB
 	})
 
-	pong, err := redisDB.Ping().Result()
-	fmt.Println(pong, err)
+	_, err := redisDB.Ping().Result()
+
+	if err != nil {
+		fmt.Println(err)
+		cacheOn = false
+	}
 
 	return redisDB
 }
