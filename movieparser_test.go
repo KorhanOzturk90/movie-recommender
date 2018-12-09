@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/ericdaugherty/alexa-skills-kit-golang"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
@@ -17,7 +19,29 @@ func TestHandler(t *testing.T) {
 	request := events.APIGatewayProxyRequest{
 		QueryStringParameters: m,
 	}
-	Handler(nil, request)
+	Handler(request)
+}
+
+func TestAlexaHandlerNoMovieSpecified(t *testing.T) {
+	intentMap := make(map[string]alexa.IntentSlot)
+	intent := alexa.Intent{"movieparserIntent", "", intentMap}
+	alexaRequest := alexa.Request{"", "", "", "", "", intent, "movie suggester"}
+	outputSpeech := alexa.OutputSpeech{"", "", ""}
+	card := alexa.Card{"", "", "", "", nil}
+	alexaResponse := alexa.Response{&outputSpeech, &card, nil, nil, true}
+	processAlexaIntent(&alexaRequest, &alexaResponse)
+	assert.Equal(t, "Please make sure you specify the movie name based on which recommendations will be made", alexaResponse.OutputSpeech.Text, "Error message should be returned when there is no movie name!")
+}
+
+func TestAlexaHandler(t *testing.T) {
+	intentMap := make(map[string]alexa.IntentSlot)
+	intent := alexa.Intent{"movieparserIntent", "", intentMap}
+	alexaRequest := alexa.Request{"", "", "", "", "", intent, "movie suggester"}
+	outputSpeech := alexa.OutputSpeech{"", "", ""}
+	card := alexa.Card{"", "", "", "", nil}
+	alexaResponse := alexa.Response{&outputSpeech, &card, nil, nil, true}
+	processAlexaIntent(&alexaRequest, &alexaResponse)
+	assert.Equal(t, "Please make sure you specify the movie name based on which recommendations will be made", alexaResponse.OutputSpeech.Text, "Error message should be returned when there is no movie name!")
 }
 
 func TestRedisClient(t *testing.T) {

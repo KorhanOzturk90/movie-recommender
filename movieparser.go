@@ -21,10 +21,10 @@ import (
 )
 
 const cardTitle = "movieSuggester"
-var(
- alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.<SKILL_ID>", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
- cacheOn = true
 
+var (
+	alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.27d938e4-00fb-462b-83fe-633ddcf27386", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
+	cacheOn       = true
 )
 
 type omdbInfo struct {
@@ -52,14 +52,14 @@ func Handle(ctx context.Context, requestEnv *alexa.RequestEnvelope) (interface{}
 	return alexaMetaData.ProcessRequest(ctx, requestEnv)
 }
 
-func (h *movieparser) OnSessionStarted(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 
 	log.Printf("OnSessionStarted requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
 	return nil
 }
 
-func (h *movieparser) OnLaunch(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
-	speechText := "Welcome to Urban Dictionary App. You can look up words by saying what's the meaning of followed by your query."
+func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
+	speechText := "Welcome to Movie Suggester. You can get movie recommendations by saying a movie name you like."
 
 	log.Printf("OnLaunch requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
 
@@ -72,34 +72,45 @@ func (h *movieparser) OnLaunch(ctx context.Context,request *alexa.Request, sessi
 	return nil
 }
 
-func (h *movieparser) OnIntent(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
-
+func (h *movieparser) OnIntent(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	log.Printf("OnIntent requestId=%s, sessionId=%s, intent=%s", request.RequestID, session.SessionID, request.Intent.Name)
+	return processAlexaIntent(request, response)
+}
+
+func processAlexaIntent(request *alexa.Request, response *alexa.Response) error {
 	filmToSearch := request.Intent.Slots["movie"].Value
 
 	switch request.Intent.Name {
 	case "movieparserIntent":
 		log.Printf("movieparser Intent triggered with %s", filmToSearch)
+		if len(filmToSearch) == 0 {
+			response.SetOutputText("Please make sure you specify the movie name based on which recommendations will be made")
+		} else {
+			movieId := getImdbIdFromMovieName(filmToSearch)
+			recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
-		movieId := getImdbIdFromMovieName(filmToSearch)
-		recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
-
-		var recommendedMoviesDetailedList [5]omdbInfo
-		for ind, element := range recommendedMoviesIdList {
-			if element != "" {
-				recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
+			var recommendedMoviesDetailedList [5]omdbInfo
+			for ind, element := range recommendedMoviesIdList {
+				if element != "" {
+					recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
+				}
 			}
+			response.SetSimpleCard(cardTitle, recommendedMoviesDetailedList[0].Title)
+			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
+				recommendedMoviesDetailedList[0].Title + ", " +
+				recommendedMoviesDetailedList[1].Title + ", " +
+				recommendedMoviesDetailedList[2].Title + ", ")
 		}
-			response.SetSimpleCard(cardTitle,  recommendedMoviesDetailedList[0].Title)
-			response.SetOutputText("You might enjoy watching " + recommendedMoviesDetailedList[0].Title + " if you enjoyed " + filmToSearch)
 
 	case "AMAZON.HelpIntent":
 		log.Println("AMAZON.HelpIntent triggered")
-		speechText := "Use this app to learn the coolest slang words and phrases!"
+		speechText := "You can use this app to get movie recommendations similar to the ones you like. The data for the recommended movies come from " +
+			"real people's input on various websites like IMDB. Would you like to tell a movie to get similar ones?"
 
 		response.SetSimpleCard(cardTitle, speechText)
 		response.SetOutputText(speechText)
 		response.SetRepromptText(speechText)
+		response.ShouldSessionEnd = false
 
 	default:
 		return errors.New("Invalid Intent")
@@ -108,14 +119,13 @@ func (h *movieparser) OnIntent(ctx context.Context,request *alexa.Request, sessi
 	return nil
 }
 
-func (h *movieparser) OnSessionEnded(ctx context.Context,request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context,response *alexa.Response) error {
+func (h *movieparser) OnSessionEnded(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 
 	log.Printf("OnSessionEnded requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
-
 	return nil
 }
 
-func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	movieId := getImdbIdFromMovieName(request.QueryStringParameters["movieName"])
 	recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
@@ -125,7 +135,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
 		}
 	}
-
 
 	movieListJson, err := json.Marshal(recommendedMoviesDetailedList)
 	if err != nil {
@@ -273,7 +282,7 @@ func redisClient() *redis.Client {
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL") + ":6379",
 		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       0,  // use default DB
+		DB:       0, // use default DB
 	})
 
 	_, err := redisDB.Ping().Result()
