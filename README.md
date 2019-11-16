@@ -9,7 +9,10 @@ https://www.amazon.com/Koz-Software-movie-suggester/dp/B07L8CWZYN/ref=sr_1_1?ie=
 
 ### Building
 
-`GOOS=linux go build -o movieSuggester movieSuggester.go`
+```
+go get
+GOOS=linux go build -o movieparser movieparser.go
+```
 
 ## Running the tests
 
