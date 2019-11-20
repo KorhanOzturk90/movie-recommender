@@ -245,7 +245,7 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 		switch {
 		case currentToken == html.ErrorToken:
 			// End of the document, we're done
-			log.Printf("Error Token -> %s", z.Token().String())
+			fmt.Printf("Error Token -> %s", z.Token().String())
 			return recommendedMoviesIdsList
 		case currentToken == html.StartTagToken:
 			t := z.Token()
@@ -257,12 +257,12 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 						if foundFags {
 							recommendedMoviesIdsList[count] = extractMovieIdFromTitleLink(a.Val)
 							count += 1
-							if count == 4 {
+							if count == 5 {
 								return recommendedMoviesIdsList
 							}
 							break
 						}
-						if strings.Contains(a.Val, "recommended-for-you-faqs") {
+						if strings.Contains(a.Val, "discover-watch") {
 							foundFags = true
 						}
 						break
