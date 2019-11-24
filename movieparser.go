@@ -1,30 +1,29 @@
 package main
 
 import (
-	"io/ioutil"
-	"fmt"
-	"net/http"
-	"log"
-	"os"
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/ericdaugherty/alexa-skills-kit-golang"
+	"github.com/go-redis/redis"
 	"golang.org/x/net/html"
 	"io"
-	"strings"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"regexp"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-lambda-go/events"
-	"context"
-	"github.com/go-redis/redis"
-	"errors"
-	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"strconv"
+	"strings"
 )
 
 const cardTitle = "movieSuggester"
 
 var (
 	alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.27d938e4-00fb-462b-83fe-633ddcf27386", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
-	cacheOn       = true
 )
 
 type omdbInfo struct {
@@ -36,11 +35,7 @@ type omdbInfo struct {
 }
 
 func main() {
-	cacheSet, err := strconv.ParseBool(os.Getenv("CACHE_ENABLED"))
-	cacheOn = cacheSet
-	if err != nil {
-		log.Printf("Invalid env var CACHE_ENABLED: %s", os.Getenv("CACHE_ENABLED"))
-	}
+
 	lambda.Start(Handle)
 
 }
@@ -100,6 +95,8 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 				recommendedMoviesDetailedList[0].Title + ", " +
 				recommendedMoviesDetailedList[1].Title + ", " +
 				recommendedMoviesDetailedList[2].Title + ", ")
+
+			return nil
 		}
 
 	case "AMAZON.HelpIntent":
@@ -135,6 +132,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
 		}
 	}
+
+	fmt.Printf("recommended movies final list %v", recommendedMoviesDetailedList)
 
 	movieListJson, err := json.Marshal(recommendedMoviesDetailedList)
 	if err != nil {
@@ -180,11 +179,15 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 }
 
 func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
-	redisCache := redisClient()
 	var omdbFilmInfo omdbInfo
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
 
-	if cacheOn {
+	cacheSet, err := strconv.ParseBool(os.Getenv("CACHE_ENABLED"))
+	if err != nil {
+		log.Printf("Invalid env var CACHE_ENABLED: %s", os.Getenv("CACHE_ENABLED"))
+	}
+	if cacheSet {
+		redisCache := redisClient()
 		cachedMovie, err := redisCache.Get(movieID).Bytes()
 		if err == redis.Nil {
 			fmt.Printf("%s does not exist in the cache, caching..\n", movieID)
@@ -289,7 +292,6 @@ func redisClient() *redis.Client {
 
 	if err != nil {
 		fmt.Println(err)
-		cacheOn = false
 	}
 
 	return redisDB

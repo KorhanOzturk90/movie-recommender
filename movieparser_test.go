@@ -13,6 +13,44 @@ func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
 	fmt.Println("extractor result: ", extractedMovieId)
 }
 
+func TestAlexaHandler(t *testing.T) {
+
+	intentSlots:= make(map[string]alexa.IntentSlot)
+	intentSlots["movie"] = alexa.IntentSlot{
+		Name:"movie",
+		Value:"Shrek",
+	}
+	intent := alexa.Intent{
+		Name: "movieparserIntent",
+		Slots: intentSlots,
+	}
+
+	request := alexa.Request{
+		Intent: intent,
+		Type: "IntentRequest",
+	}
+
+	att := alexa.Session{}.Attributes
+
+	session := &alexa.Session{
+		SessionID:  "testId",
+		Attributes: att,
+	}
+
+	requestEnv := alexa.RequestEnvelope{
+		Request: &request,
+		Session: session,
+
+	}
+
+	response, err := Handle(nil, &requestEnv)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("response %v", response)
+	}
+}
+
 func TestHandler(t *testing.T) {
 	m := make(map[string]string)
 	m["movieName"] = "the+mist"
