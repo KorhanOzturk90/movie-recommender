@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -21,7 +20,7 @@ func TestAlexaHandler(t *testing.T) {
 		Value:"Shrek",
 	}
 	intent := alexa.Intent{
-		Name: "movieparserIntent",
+		Name: Recommended_movie_intent,
 		Slots: intentSlots,
 	}
 
@@ -51,20 +50,39 @@ func TestAlexaHandler(t *testing.T) {
 	}
 }
 
-func TestHandler(t *testing.T) {
-	m := make(map[string]string)
-	m["movieName"] = "the+mist"
-	request := events.APIGatewayProxyRequest{
-		QueryStringParameters: m,
+func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
+
+	intentSlots:= make(map[string]alexa.IntentSlot)
+
+	intent := alexa.Intent{
+		Name: Recommended_streaming_intent,
+		Slots: intentSlots,
 	}
-	response, err := Handler(request)
+	request := alexa.Request{
+		Intent: intent,
+		Type: "IntentRequest",
+	}
+
+	att := alexa.Session{}.Attributes
+
+	session := &alexa.Session{
+		SessionID:  "testId",
+		Attributes: att,
+	}
+
+	requestEnv := alexa.RequestEnvelope{
+		Request: &request,
+		Session: session,
+	}
+
+	response, err := Handle(nil, &requestEnv)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("response %v", response)
-		assert.Equal(t, response.StatusCode, 200, "Unexpected Http Response")
+		fmt.Printf("response: %v", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text )
 	}
 }
+
 
 func TestAlexaHandlerNoMovieSpecified(t *testing.T) {
 	intentMap := make(map[string]alexa.IntentSlot)

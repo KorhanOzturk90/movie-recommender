@@ -1,0 +1,782 @@
+[
+  {
+    "id": 771496134,
+    "title": "Downton Abbey",
+    "url": "/m/downton_abbey",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 84,
+    "theaterReleaseDate": "Sep 20",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "PG",
+    "synopsis": "<em>Downton Abbey</em> distills many of the ingredients that made the show an enduring favorite, welcoming fans back for a fittingly resplendent homecoming.",
+    "synopsisType": "consensus",
+    "runtime": "2 hr. 2 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/4Wc8KcC0wTA0",
+      "id": "11311902"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEzNTgwNTtqOzE4Mjg3OzEyMDA7NDA1MDs2MDAw",
+      "primary": "https://resizing.flixster.com/cXZ6v_OC5jvTbP1jNPlW51yy-Ww=/130x0/v1.bTsxMzEzNTgwNTtqOzE4Mjg3OzEyMDA7NDA1MDs2MDAw"
+    },
+    "actors": [
+      "Hugh Bonneville",
+      "Laura Carmichael",
+      "Jim Carter"
+    ]
+  },
+  {
+    "id": 771502884,
+    "title": "The Report",
+    "url": "/m/the_report_2019",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 83,
+    "theaterReleaseDate": "Nov 15",
+    "dvdReleaseDate": "Nov 29",
+    "mpaaRating": "R",
+    "synopsis": "<em>The Report</em> draws on a dark chapter in American history to offer a sober, gripping account of one public servant's crusade for accountability.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 58 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/M2QA3fWeXJXc",
+      "id": "11313094"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzIxNjYwODtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw",
+      "primary": "https://resizing.flixster.com/B-AITsGTodyjNQET_02pU0OZnKA=/130x0/v1.bTsxMzIxNjYwODtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw"
+    },
+    "actors": [
+      "Adam Driver",
+      "Annette Bening",
+      "Jon Hamm"
+    ]
+  },
+  {
+    "id": 771147522,
+    "title": "The Irishman",
+    "url": "/m/the_irishman",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 96,
+    "theaterReleaseDate": "Nov 1",
+    "dvdReleaseDate": "Nov 27",
+    "mpaaRating": "R",
+    "synopsis": "An epic gangster drama that earns its extended runtime, <em>The Irishman</em> finds Martin Scorsese revisiting familiar themes to poignant, funny, and profound effect.",
+    "synopsisType": "consensus",
+    "runtime": "3 hr. 29 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/wKwQFHO6QvZS",
+      "id": "11313614"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE4OTE2NTtqOzE4Mjg3OzEyMDA7MjAwMDsyOTI5",
+      "primary": "https://resizing.flixster.com/wr94C6zv8lcrnhccLg7tdxt38AM=/130x0/v1.bTsxMzE4OTE2NTtqOzE4Mjg3OzEyMDA7MjAwMDsyOTI5"
+    },
+    "actors": [
+      "Robert De Niro",
+      "Al Pacino",
+      "Joe Pesci"
+    ]
+  },
+  {
+    "id": 771506924,
+    "title": "Hustlers",
+    "url": "/m/hustlers_2019",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 88,
+    "theaterReleaseDate": "Sep 13",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "R",
+    "synopsis": "Led by a career-best performance from Jennifer Lopez, <em>Hustlers</em> is a uniquely empowering heist drama with depth and intelligence to match its striking visual appeal.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 47 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/1VJfmgBLiGvk",
+      "id": "11313211"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE2MTEyMjtqOzE4Mjg3OzEyMDA7MTM4MjsyMDQ4",
+      "primary": "https://resizing.flixster.com/64KRwWQ6ZXnpzlNKMMM_kOQD5uo=/130x0/v1.bTsxMzE2MTEyMjtqOzE4Mjg3OzEyMDA7MTM4MjsyMDQ4"
+    },
+    "actors": [
+      "Constance Wu",
+      "Jennifer Lopez",
+      "Julia Stiles"
+    ]
+  },
+  {
+    "id": 771500076,
+    "title": "Ready or Not",
+    "url": "/m/ready_or_not_2019",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 88,
+    "theaterReleaseDate": "Aug 21",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "R",
+    "synopsis": "Smart, subversive, and darkly funny, <em>Ready or Not</em> is a crowd-pleasing horror film with giddily entertaining bite.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 35 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/5dt7B3fQTvQo",
+      "id": "11312245"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE1NzQzNDtqOzE4Mjg3OzEyMDA7NDM2OzY1MA",
+      "primary": "https://resizing.flixster.com/TZxzWdBNyb2GJne3LciZpmsa5dY=/130x0/v1.bTsxMzE1NzQzNDtqOzE4Mjg3OzEyMDA7NDM2OzY1MA"
+    },
+    "actors": [
+      "Samara Weaving",
+      "Adam Brody",
+      "Mark O'Brien (IX) "
+    ]
+  },
+  {
+    "id": 771502885,
+    "title": "Don't Let Go (Relive)",
+    "url": "/m/dont_let_go_2019",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 39,
+    "theaterReleaseDate": "Aug 30",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "R",
+    "synopsis": "While admirably intelligent and well-cast, <em>Don't Let Go</em> suffers from a formulaic approach compounded by its uneven writing and an awkward tonal balance.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 47 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/ZcmPW6H8_OJC",
+      "id": "11312526"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE0MzgxMTtqOzE4Mjg3OzEyMDA7NjQzMjsxMDA0Mg",
+      "primary": "https://resizing.flixster.com/Hf4g9xXocFH_qI1-LV2azjwYNqo=/130x0/v1.bTsxMzE0MzgxMTtqOzE4Mjg3OzEyMDA7NjQzMjsxMDA0Mg"
+    },
+    "actors": [
+      "David Oyelowo",
+      "Storm Reid",
+      "Mykelti Williamson"
+    ]
+  },
+  {
+    "id": 771494692,
+    "title": "Overcomer",
+    "url": "/m/overcomer",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 50,
+    "theaterReleaseDate": "Aug 23",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "PG",
+    "synopsis": "Life changes overnight for coach John Harrison when his high school basketball team and state championship dreams are crushed under the weight of unexpected news. When the largest manufacturing plant shuts down and hundreds of families leave their town, John questions how he and his family will face an uncertain future. After reluctantly agreeing to coach cross-country, John and his wife, Amy, meet an aspiring athlete who's pushing her limits on a journey toward discovery. Inspired by the words and prayers of a new-found friend, John becomes the least likely coach helping the least likely runner attempt the impossible in the biggest race of the year.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 55 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/6lFAfg6jOyrT",
+      "id": "11312709"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMjk5Mjg3MjtqOzE4Mjg1OzEyMDA7ODY0OzEyODA",
+      "primary": "https://resizing.flixster.com/55DxZUPlyprGq0b3tIAiKAEWYfo=/130x0/v1.bTsxMjk5Mjg3MjtqOzE4Mjg1OzEyMDA7ODY0OzEyODA"
+    },
+    "actors": [
+      "Alex Kendrick",
+      "Priscilla C. Shirer",
+      "Shari Rigby"
+    ]
+  },
+  {
+    "id": 771503980,
+    "title": "This is not Berlin",
+    "url": "/m/this_is_not_berlin",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 82,
+    "theaterReleaseDate": "Aug 9",
+    "dvdReleaseDate": "Nov 26",
+    "mpaaRating": "NR",
+    "synopsis": "<em>This Is Not Berlin</em> uses one young man's sexual and cultural awakening as the fuel for a personal story with widely resonant themes.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 52 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzEzMDY2MztqOzE4Mjg2OzEyMDA7MjAyNTszMDAw",
+      "primary": "https://resizing.flixster.com/tXsmUr4qBybXcdTuaEbsk57eIhU=/130x0/v1.bTsxMzEzMDY2MztqOzE4Mjg2OzEyMDA7MjAyNTszMDAw"
+    },
+    "actors": [
+      "Xabiani Ponce deLeon",
+      "José Antonio Toledano",
+      "Ximena Romo Mercado"
+    ]
+  },
+  {
+    "id": 771507653,
+    "title": "Atlantics",
+    "url": "/m/atlantics",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 97,
+    "theaterReleaseDate": "Nov 15",
+    "dvdReleaseDate": "Nov 29",
+    "mpaaRating": "NR",
+    "synopsis": "An unpredictable supernatural drama rooted in real-world social commentary, <em>Atlantique</em> suggests a thrillingly bright future for debuting filmmaker Mati Diop.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 44 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzIyNzMzMDtqOzE4Mjg4OzEyMDA7Mjc2OzQwOA",
+      "primary": "https://resizing.flixster.com/quoA5T6lzF_Ug88obDkLyxQQ2kc=/130x0/v1.bTsxMzIyNzMzMDtqOzE4Mjg4OzEyMDA7Mjc2OzQwOA"
+    },
+    "actors": [
+      "Mame Bineta Sane",
+      "Amadou Mbow",
+      "Nicole Sougou"
+    ]
+  },
+  {
+    "id": 771491333,
+    "title": "Once Upon a Time In Hollywood",
+    "url": "/m/once_upon_a_time_in_hollywood",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 85,
+    "theaterReleaseDate": "Jul 26",
+    "dvdReleaseDate": "Nov 22",
+    "mpaaRating": "R",
+    "synopsis": "Thrillingly unrestrained yet solidly crafted, <em>Once Upon a Time in Hollywood</em> tempers Tarantino's provocative impulses with the clarity of a mature filmmaker's vision.",
+    "synopsisType": "consensus",
+    "runtime": "2 hr. 39 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/Hs8RqI3Qf4yz",
+      "id": "11311901"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEwMTEzNDtqOzE4Mjg2OzEyMDA7MTY5OzI1MA",
+      "primary": "https://resizing.flixster.com/MISxc0wJIQmZH_7-SocRLEGMIVE=/130x0/v1.bTsxMzEwMTEzNDtqOzE4Mjg2OzEyMDA7MTY5OzI1MA"
+    },
+    "actors": [
+      "Leonardo DiCaprio",
+      "Brad Pitt",
+      "Margot Robbie"
+    ]
+  },
+  {
+    "id": 771484943,
+    "title": "It Chapter Two",
+    "url": "/m/it_chapter_two",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 62,
+    "theaterReleaseDate": "Sep 6",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "R",
+    "synopsis": "<em>It: Chapter Two</em> proves bigger doesn't always mean scarier for horror sequels, but a fine cast and faithful approach to the source material keep this follow-up afloat.",
+    "synopsisType": "consensus",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/MBQeTSsuphES",
+      "id": "11312509"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEzMTgyNTtwOzE4Mjg2OzEyMDA7MTA4MDsxMzQ5",
+      "primary": "https://resizing.flixster.com/Wnf-YySONyJ2m6s6wFbbzRTaHGg=/130x0/v1.bTsxMzEzMTgyNTtwOzE4Mjg2OzEyMDA7MTA4MDsxMzQ5"
+    },
+    "actors": [
+      "James McAvoy",
+      "Jessica Chastain",
+      "Bill Hader"
+    ]
+  },
+  {
+    "id": 771474807,
+    "title": "Where'd You Go, Bernadette",
+    "url": "/m/whered_you_go_bernadette",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 49,
+    "theaterReleaseDate": "Aug 16",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "PG13",
+    "synopsis": "<em>Where'd You Go, Bernadette</em> offers dispiriting proof that a talented director, bestselling source material, and terrific cast can add up to far less than the sum of their parts.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 44 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/_hFbCqM7fWU2",
+      "id": "11311809"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzA3Mjc3NDtqOzE4Mjg2OzEyMDA7NDA1MDs2MDAw",
+      "primary": "https://resizing.flixster.com/uDn8XYhoPKOaqZUkzFrOfwGGrOw=/130x0/v1.bTsxMzA3Mjc3NDtqOzE4Mjg2OzEyMDA7NDA1MDs2MDAw"
+    },
+    "actors": [
+      "Cate Blanchett",
+      "Billy Crudup",
+      "Kristen Wiig"
+    ]
+  },
+  {
+    "id": 771474312,
+    "title": "Liyana",
+    "url": "/m/liyana",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 100,
+    "theaterReleaseDate": "Oct 10",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "NR",
+    "synopsis": "A Swazi girl embarks on a dangerous quest to rescue her young twin brothers. This animated African tale is born in the imaginations of five orphaned children in Swaziland who collaborate to tell a story of perseverance drawn from their darkest memories and brightest dreams. Their fictional character's journey is interwoven with poetic and observational documentary scenes to create a genre-defying celebration of collective storytelling.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 17 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/phCgufzqtwOg",
+      "id": "11309056"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMjg1NTc4ODtqOzE4MjgzOzEyMDA7MTk0NDsyODA4",
+      "primary": "https://resizing.flixster.com/mY1oBrRVbpuLsJS5oiox34TUv9Y=/130x0/v1.bTsxMjg1NTc4ODtqOzE4MjgzOzEyMDA7MTk0NDsyODA4"
+    },
+    "actors": [
+      "Gcina Mhlophe"
+    ]
+  },
+  {
+    "id": 771501712,
+    "title": "Brittany Runs a Marathon",
+    "url": "/m/brittany_runs_a_marathon",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 89,
+    "theaterReleaseDate": "Sep 13",
+    "dvdReleaseDate": "Nov 22",
+    "mpaaRating": "R",
+    "synopsis": "<em>Brittany Runs a Marathon</em> is an earnest and hilarious dramedy that finally gives Jillian Bell a role worthy of her gifts.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 44 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/_4MWLRCjp1Bf",
+      "id": "11312073"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE1ODc2OTtqOzE4Mjg3OzEyMDA7MjQzMDszNjAw",
+      "primary": "https://resizing.flixster.com/JLgi9OHgQIXLTS3BO7UOsX_BoXk=/130x0/v1.bTsxMzE1ODc2OTtqOzE4Mjg3OzEyMDA7MjQzMDszNjAw"
+    },
+    "actors": [
+      "Jillian Bell",
+      "Michaela Watkins",
+      "Utkarsh Ambudkar"
+    ]
+  },
+  {
+    "id": 771504131,
+    "title": "Queen of Hearts",
+    "url": "/m/queen_of_hearts_2019",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 95,
+    "theaterReleaseDate": "Nov 1",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "NR",
+    "synopsis": "A woman jeopardizes both her career and her family when she seduces her teenage stepson and is forced to make an irreversible decision with fatal consequences.",
+    "synopsisType": "synopsis",
+    "runtime": "2 hr. 7 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzIyODYxNTtqOzE4Mjg4OzEyMDA7MjAwMDsyOTYz",
+      "primary": "https://resizing.flixster.com/eGTTGIt_4eQcfgEQLXI8HTs3gFY=/130x0/v1.bTsxMzIyODYxNTtqOzE4Mjg4OzEyMDA7MjAwMDsyOTYz"
+    },
+    "actors": [
+      "Trine Dryholm",
+      "Gustav Lindh",
+      "Magnus Krepper"
+    ]
+  },
+  {
+    "id": 771503641,
+    "title": "Adam",
+    "url": "/m/adam_2019",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 74,
+    "theaterReleaseDate": "Aug 14",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "NR",
+    "synopsis": "Awkward, self-conscious Adam Freeman (Nicholas Alexander) has just finished his junior year of high school in 2006. When his cool older sister Casey (Margaret Qualley) suggests he visit her in New York for the Summer, Adam has visions of meeting a girl and finally gaining some actual life experience. The fantasy doesn't materialize exactly as expected. Casey has enthusiastically embraced life amidst Brooklyn's young LGBTQ community and invites Adam to tag along with her to queer bars, marriage equality rallies and other happenings. When Adam falls at first sight for Gillian (Bobbi Salvör Menuez), a smart, beautiful young woman in this new crowd, she mistakenly assumes he is trans. Flummoxed and enamored, he haplessly goes along with her assumption, resulting in an increasingly complex comedy -- and tragedy -- of errors he's ill-equipped to navigate.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 35 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/zQLSteBSprWb",
+      "id": "11312775"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE1ODIwNDtqOzE4Mjg3OzEyMDA7ODEwMDsxMjAwMA",
+      "primary": "https://resizing.flixster.com/0vu2OMJuo9vcWZyuk7sPfLQNMbE=/130x0/v1.bTsxMzE1ODIwNDtqOzE4Mjg3OzEyMDA7ODEwMDsxMjAwMA"
+    },
+    "actors": [
+      "Nicholas Alexander",
+      "Bobbi Salvör Menuez",
+      " Leo Sheng"
+    ]
+  },
+  {
+    "id": 771487975,
+    "title": "Kiwi Christmas",
+    "url": "/m/kiwi_christmas",
+    "tomatoIcon": "NA",
+    "tomatoScore": null,
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "NR",
+    "synopsis": "Disillusioned with the materialism of Christmas, Santa escapes as far from the North Pole as possible: to New Zealand! When his rocket sleigh crashes and sinks in the waters of an idyllic holiday beach, he is found washed up by Sam (8) and his sister Molly (12) and their newly separated parents. The family discovers who Santa really is and must unite to rescue him from the local authorities and convince Santa to return to the North Pole in time for Christmas Eve.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 29 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzIyNzMyMTtqOzE4Mjg4OzEyMDA7MTkwMDsyODAw",
+      "primary": "https://resizing.flixster.com/-mPwMb31z2Z0qo8k2y1g7zPFiYs=/130x0/v1.bTsxMzIyNzMyMTtqOzE4Mjg4OzEyMDA7MTkwMDsyODAw"
+    },
+    "actors": [
+      "Kari Väänänen",
+      "Sia Trokenheim",
+      "Xavier Horan"
+    ]
+  },
+  {
+    "id": 771509870,
+    "title": "Killerman",
+    "url": "/m/killerman",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 19,
+    "theaterReleaseDate": "Aug 30",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "R",
+    "synopsis": "A New York City money launderer named Moe Diamond (Liam Hemsworth) desperately searches for answers after waking up with no memory, millions in stolen cash and drugs, and an insane crew of dirty cops violently hunting him down.",
+    "synopsisType": "synopsis",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/83DhLHVLy9Vj",
+      "id": "11312246"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEzMTgyNztqOzE4Mjg2OzEyMDA7NDA1MDs2MDAw",
+      "primary": "https://resizing.flixster.com/Ym0RKt0F0tx8RfCGUrDZniaYUts=/130x0/v1.bTsxMzEzMTgyNztqOzE4Mjg2OzEyMDA7NDA1MDs2MDAw"
+    },
+    "actors": [
+      "Liam Hemsworth",
+      "Emory Cohen",
+      "Diane Guerrero"
+    ]
+  },
+  {
+    "id": 771510529,
+    "title": "The Divine Fury",
+    "url": "/m/the_divine_fury",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 36,
+    "theaterReleaseDate": "Aug 16",
+    "dvdReleaseDate": "Nov 19",
+    "mpaaRating": "NR",
+    "synopsis": "After losing his father at a young age in a terrible accident, Yong-hu (Park) abandons his Christian faith and chooses to only believe in himself. Now as an adult, Yong-hu is a champion fighter and has everything he has ever wanted, that is until mysterious wounds appear in the palms of his hands. He solicits help from a local priest Father Ahn (Ahn), hoping the priest can help relieve him of the painful markings only to find himself in the middle of a dangerous fight against otherworldly evil forces seeking to wreak havoc on the human world.",
+    "synopsisType": "synopsis",
+    "runtime": "2 hr. 9 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/HaYzvosI0lr4",
+      "id": "11313759"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEyMjIyMztqOzE4Mjg2OzEyMDA7MTM4MjsyMDQ4",
+      "primary": "https://resizing.flixster.com/QUZabFWu8I8yql-8MvZ5eKKeaiY=/130x0/v1.bTsxMzEyMjIyMztqOzE4Mjg2OzEyMDA7MTM4MjsyMDQ4"
+    },
+    "actors": [
+      "Lee Joon-Seung"
+    ]
+  },
+  {
+    "id": 771469674,
+    "title": "Polaroid",
+    "url": "/m/polaroid_2019",
+    "tomatoIcon": "NA",
+    "tomatoScore": null,
+    "theaterReleaseDate": "Oct 11",
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "PG13",
+    "synopsis": "From the producers of the THE RING and THE GRUDGE and based on the award-winning short by Lars Klevberg, comes the next iconic and bold new vision in horror: POLAROID. High school loner Bird Fitcher has no idea what dark secrets are tied to the mysterious Polaroid vintage camera she stumbles upon, but it doesn't take long to discover that those who have their picture taken meet a tragic end.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 28 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/CiMs_UQ72CC_",
+      "id": "11299408"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE5MDI4NTtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw",
+      "primary": "https://resizing.flixster.com/OjxkhVRdb8y0EUNDw8nWxpXWusk=/130x0/v1.bTsxMzE5MDI4NTtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw"
+    },
+    "actors": [
+      "Kathryn Prescott",
+      "Mitch Pileggi",
+      "Grace Zabriskie"
+    ]
+  },
+  {
+    "id": 771501715,
+    "title": "Angel Has Fallen",
+    "url": "/m/angel_has_fallen",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 39,
+    "theaterReleaseDate": "Aug 23",
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "R",
+    "synopsis": "Cut from the same rough cloth as its predecessors, <em>Angel Has Fallen</em> rounds out a mostly forgettable action trilogy in fittingly mediocre fashion.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 54 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/rGYGim_2My7f",
+      "id": "11312655"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEzOTAzNjtqOzE4Mjg3OzEyMDA7MTk0NDsyODgw",
+      "primary": "https://resizing.flixster.com/NHPJ1Ci0ok6zE40Mh6qTod_6BXg=/130x0/v1.bTsxMzEzOTAzNjtqOzE4Mjg3OzEyMDA7MTk0NDsyODgw"
+    },
+    "actors": [
+      "Gerard Butler",
+      "Morgan Freeman",
+      "Jada Pinkett Smith"
+    ]
+  },
+  {
+    "id": 771502535,
+    "title": "After the Wedding",
+    "url": "/m/after_the_wedding_2019",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 43,
+    "theaterReleaseDate": "Aug 9",
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "PG13",
+    "synopsis": "<em>After the Wedding</em> benefits from solid casting and strong source material, yet proves stubbornly resistant to spark to emotional life.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 50 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/R9aTaPr7xqEJ",
+      "id": "11312093"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzExNTMzNztqOzE4Mjg2OzEyMDA7MTk0NDsyODgw",
+      "primary": "https://resizing.flixster.com/KCMsPY4Lj6qJgLwc0bnUQi7liIo=/130x0/v1.bTsxMzExNTMzNztqOzE4Mjg2OzEyMDA7MTk0NDsyODgw"
+    },
+    "actors": [
+      "Julianne Moore",
+      "Michelle Williams",
+      "Billy Crudup"
+    ]
+  },
+  {
+    "id": 771512703,
+    "title": "Noelle",
+    "url": "/m/noelle_2019",
+    "tomatoIcon": "rotten",
+    "tomatoScore": 48,
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "G",
+    "synopsis": "The always charming Anna Kendrick does her best, but <em>Noelle</em>'s progressive take on a timeless tale is unfortunately subdued.",
+    "synopsisType": "consensus",
+    "posters": {
+      "thumborId": "v1.bTsxMzE2NDUzMztwOzE4Mjg3OzEyMDA7MTA4MDsxMzUw",
+      "primary": "https://resizing.flixster.com/Gu08AmbLF5nH6DopLbex44qWQfQ=/130x0/v1.bTsxMzE2NDUzMztwOzE4Mjg3OzEyMDA7MTA4MDsxMzUw"
+    },
+    "actors": [
+      "Anna Kendrick",
+      "Bill Hader",
+      "Kingsley Ben-Adir"
+    ]
+  },
+  {
+    "id": 771497834,
+    "title": "Tel Aviv on Fire",
+    "url": "/m/tel_aviv_on_fire",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 91,
+    "theaterReleaseDate": "Aug 2",
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "NR",
+    "synopsis": "Thoughtful and well-acted, <em>Tel Aviv on Fire</em> highlights the awful absurdity of war -- and proves it's possible to find humor in the midst of cultural conflict.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 37 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/xNL3p_2GQ37Z",
+      "id": "11312516"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE1ODc3ODtqOzE4Mjg3OzEyMDA7MTk0NDsyODgw",
+      "primary": "https://resizing.flixster.com/qmlegZsv4ctcaLTHQvvLdPqDOAc=/130x0/v1.bTsxMzE1ODc3ODtqOzE4Mjg3OzEyMDA7MTk0NDsyODgw"
+    },
+    "actors": [
+      "Kais Nashif",
+      "Lubna Azabal",
+      "Yaniv Biton"
+    ]
+  },
+  {
+    "id": 771505567,
+    "title": "If the Dancer Dances",
+    "url": "/m/if_the_dancer_dances",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 93,
+    "theaterReleaseDate": "Apr 26",
+    "dvdReleaseDate": "Nov 12",
+    "mpaaRating": "NR",
+    "synopsis": "IF THE DANCER DANCES invites viewers into the intimate world of the dance studio. Stephen Petronio, one of today's leading dance-makers, is determined to help his dancers breathe new life into RainForest (1968), an iconic work by the legendary choreographer Merce Cunningham. With help from three members of the former Cunningham company, the film tracks Petronio's dancers as they strive to re-stage this great work, revealing what it takes to keep a dance -- and a legacy -- alive. Timed to coincide with Cunningham's centennial, IF THE DANCER DANCES is the first documentary on the subject of Cunningham's work since his passing in 2009.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 23 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzAzMTYzNTtqOzE4Mjg1OzEyMDA7MjAzNzszMDAw",
+      "primary": "https://resizing.flixster.com/P_5DU29tt0t2YESYK3esdDnnIyE=/130x0/v1.bTsxMzAzMTYzNTtqOzE4Mjg1OzEyMDA7MjAzNzszMDAw"
+    }
+  },
+  {
+    "id": 771505264,
+    "title": "Autonomy",
+    "url": "/m/autonomy",
+    "tomatoIcon": "NA",
+    "tomatoScore": null,
+    "theaterReleaseDate": "Nov 15",
+    "dvdReleaseDate": "Nov 15",
+    "mpaaRating": "NR",
+    "synopsis": "Our film is about the human side of the emerging technology that will power self-driving vehicles. It will consider questions much greater than the technical: What is control, and who do we become as we relinquish it to machines? Do we--and will we--define ourselves by the technology we create?",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 20 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzIzNzQ5MTtqOzE4Mjg4OzEyMDA7MjQ1MDszNDUw",
+      "primary": "https://resizing.flixster.com/fEof11JC1kiwbWBQyRoIJxtWEFo=/130x0/v1.bTsxMzIzNzQ5MTtqOzE4Mjg4OzEyMDA7MjQ1MDszNDUw"
+    },
+    "actors": [
+      "Eddie Alterman",
+      "Malcolm Gladwell",
+      "Ray Magliozzi"
+    ]
+  },
+  {
+    "id": 771502883,
+    "title": "Official Secrets",
+    "url": "/m/official_secrets",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 83,
+    "theaterReleaseDate": "Aug 30",
+    "dvdReleaseDate": "Nov 5",
+    "mpaaRating": "R",
+    "synopsis": "<em>Official Secrets</em> has a familiar structure and an obvious if worthy message, but rises on the strength of Keira Knightley's powerful performance.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 52 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/kVXHslyHKEkp",
+      "id": "11312284"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE4MzY3NDtqOzE4Mjg3OzEyMDA7MTYzNTsyNDE1",
+      "primary": "https://resizing.flixster.com/pQtf2rYEgPx8e41CK_YwxqymLpA=/130x0/v1.bTsxMzE4MzY3NDtqOzE4Mjg3OzEyMDA7MTYzNTsyNDE1"
+    },
+    "actors": [
+      "Keira Knightley",
+      "Matt Smith (XI)",
+      "Adam Bakri"
+    ]
+  },
+  {
+    "id": 771503951,
+    "title": "The Peanut Butter Falcon",
+    "url": "/m/the_peanut_butter_falcon",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 95,
+    "theaterReleaseDate": "Aug 9",
+    "dvdReleaseDate": "Nov 5",
+    "mpaaRating": "PG13",
+    "synopsis": "A feelgood adventure brought to life by outstanding performances, <em>The Peanut Butter Falcon</em> finds rich modern resonance in classic American fiction.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 33 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/ynwVMbRtYLjp",
+      "id": "11312242"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzE1ODIwMjtqOzE4Mjg3OzEyMDA7Njc0Ozk5OA",
+      "primary": "https://resizing.flixster.com/Fivdz2KuMgJ2EF1KQTW8FP6R32U=/130x0/v1.bTsxMzE1ODIwMjtqOzE4Mjg3OzEyMDA7Njc0Ozk5OA"
+    },
+    "actors": [
+      "Shia LaBeouf",
+      "Dakota Johnson ",
+      "Zack Gottsagen "
+    ]
+  },
+  {
+    "id": 771491154,
+    "title": "Dora and the Lost City of Gold",
+    "url": "/m/dora_and_the_lost_city_of_gold",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 84,
+    "theaterReleaseDate": "Aug 9",
+    "dvdReleaseDate": "Nov 5",
+    "mpaaRating": "PG",
+    "synopsis": "Led by a winning performance from Isabela Moner, <em>Dora and the Lost City of Gold</em> is a family-friendly adventure that retains its source material's youthful spirit.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 42 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/DWDZs2Q9XKa5",
+      "id": "11312421"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzEzMjc3NDtqOzE4Mjg2OzEyMDA7MTgyODsyODUz",
+      "primary": "https://resizing.flixster.com/HusnQVSiUSOs9vbAnMjNZzq7VCc=/130x0/v1.bTsxMzEzMjc3NDtqOzE4Mjg2OzEyMDA7MTgyODsyODUz"
+    },
+    "actors": [
+      "Isabela Merced",
+      "Eugenio Derbez",
+      "Michael Peña"
+    ]
+  },
+  {
+    "id": 771514862,
+    "title": "Let It Snow",
+    "url": "/m/let_it_snow_2019",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 76,
+    "dvdReleaseDate": "Nov 8",
+    "mpaaRating": "PG13",
+    "synopsis": "Comfortably cliché, <em>Let It Snow</em> wears its influences on its sleeve, but works anyway thanks an excellent ensemble and just the right amount of holiday cheer.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 32 min.",
+    "posters": {
+      "thumborId": "v1.bTsxMzIyMjU5MDtqOzE4Mjg4OzEyMDA7NDAwMDs1OTI2",
+      "primary": "https://resizing.flixster.com/fn3PMBbanUmGdT72ofIZL_7L6Jc=/130x0/v1.bTsxMzIyMjU5MDtqOzE4Mjg4OzEyMDA7NDAwMDs1OTI2"
+    },
+    "actors": [
+      "Isabela Merced",
+      "Shameik Moore",
+      "Kiernan Shipka"
+    ]
+  },
+  {
+    "id": 771502605,
+    "title": "One Child Nation",
+    "url": "/m/one_child_nation",
+    "tomatoIcon": "certified_fresh",
+    "tomatoScore": 98,
+    "theaterReleaseDate": "Aug 9",
+    "dvdReleaseDate": "Nov 8",
+    "mpaaRating": "R",
+    "synopsis": "As illuminating as it is accessible, <em>One Child Nation</em> probes a painful chapter in Chinese history with piercing clarity.",
+    "synopsisType": "consensus",
+    "runtime": "1 hr. 29 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/mGgvT8HHXkU2",
+      "id": "11312021"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzExODE4MjtqOzE4Mjg2OzEyMDA7NDUwMDs2NDUw",
+      "primary": "https://resizing.flixster.com/NNPYnLqW1Gb0nvXKo-5iKqdtZaA=/130x0/v1.bTsxMzExODE4MjtqOzE4Mjg2OzEyMDA7NDUwMDs2NDUw"
+    }
+  },
+  {
+    "id": 771493651,
+    "title": "Danger Close",
+    "url": "/m/danger_close_2019",
+    "tomatoIcon": "fresh",
+    "tomatoScore": 67,
+    "theaterReleaseDate": "Nov 8",
+    "dvdReleaseDate": "Nov 8",
+    "mpaaRating": "R",
+    "synopsis": "Major Harry Smith (Travis Fimmel) and his company of 108 young and inexperienced Australian and New Zealand soldiers are fighting for their lives in the Battle of Long tan. With 2,500 battle-hardened Viet Cong soldiers closing in, their ammunition running out and casualties mounting, each man searches for the strength to triumph over an uncertain future with honor, decency and courage.",
+    "synopsisType": "synopsis",
+    "runtime": "1 hr. 58 min.",
+    "mainTrailer": {
+      "sourceId": "http://link.theplatform.com/s/NGweTC/media/zb3OYJcCL9p_",
+      "id": "11313517"
+    },
+    "posters": {
+      "thumborId": "v1.bTsxMzIwNzUwNDtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw",
+      "primary": "https://resizing.flixster.com/Fb1e0jCPLtRp1pSHwfwI9Nc3i60=/130x0/v1.bTsxMzIwNzUwNDtqOzE4Mjg3OzEyMDA7MjAyNTszMDAw"
+    },
+    "actors": [
+      "Travis Fimmel",
+      "Richard Roxburgh",
+      "Luke Bracey"
+    ]
+  }
+]

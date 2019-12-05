@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/go-redis/redis"
 	"golang.org/x/net/html"
@@ -16,11 +17,16 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 const cardTitle = "movieSuggester"
+const Recommended_movie_intent = "movieparserIntent"
+const Recommended_streaming_intent = "topstreamingIntent"
 
 var (
 	alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.27d938e4-00fb-462b-83fe-633ddcf27386", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
@@ -32,6 +38,13 @@ type omdbInfo struct {
 	Type   string
 	Year   string
 	Plot   string
+}
+
+type movie struct {
+	Id          int64
+	Title       string
+	Url         string
+	TomatoScore int
 }
 
 func main() {
@@ -76,7 +89,16 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 	filmToSearch := request.Intent.Slots["movie"].Value
 
 	switch request.Intent.Name {
-	case "movieparserIntent":
+	case Recommended_streaming_intent:
+		topStreamingMovies := parseAllStreamingMovies()
+		var responseText = "The highly rated top 5 movies streaming are "
+		for _, movie := range topStreamingMovies {
+			responseText += movie.Title + ", "
+		}
+		response.SetSimpleCard(cardTitle, "stream")
+		response.SetOutputText(responseText)
+
+	case Recommended_movie_intent:
 		log.Printf("movieparser Intent triggered with %s", filmToSearch)
 		if len(filmToSearch) == 0 {
 			response.SetOutputText("Please make sure you specify the movie name based on which recommendations will be made")
@@ -120,38 +142,6 @@ func (h *movieparser) OnSessionEnded(ctx context.Context, request *alexa.Request
 
 	log.Printf("OnSessionEnded requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
 	return nil
-}
-
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	movieId := getImdbIdFromMovieName(request.QueryStringParameters["movieName"])
-	recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
-
-	var recommendedMoviesDetailedList [5]omdbInfo
-	for ind, element := range recommendedMoviesIdList {
-		if element != "" {
-			recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
-		}
-	}
-
-	fmt.Printf("recommended movies final list %v", recommendedMoviesDetailedList)
-
-	movieListJson, err := json.Marshal(recommendedMoviesDetailedList)
-	if err != nil {
-		fmt.Println(err)
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "An error occurred while parsing movie list to JSON",
-		}, err
-	}
-
-	fmt.Println("Final List of Recommended Movies: ", string(movieListJson))
-	headers := make(map[string]string)
-	headers["Content-Type"] = "application/json"
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       string(movieListJson),
-		Headers:    headers,
-	}, nil
 }
 
 func getOmdbMovieInfo(omdbURL string) omdbInfo {
@@ -229,7 +219,6 @@ func getImdbIdFromMovieName(movieName string) string {
 
 func readImdbPageSource(url string) [5]string {
 	resp, _ := http.Get(url)
-	fmt.Printf("IMDB Status code for url %s %s\n", url, resp.Status)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
 	fmt.Println("links list ", recommendedLinkList)
@@ -279,6 +268,68 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 func extractMovieIdFromTitleLink(link string) string {
 	r, _ := regexp.Compile("/title/([a-zA-Z0-9]+)/\\?ref")
 	return r.FindStringSubmatch(link)[1]
+}
+
+func parseAllStreamingMovies() []movie {
+
+	//jsonData, err := ioutil.ReadFile("movie_stream_list.json")
+	//check(err)
+
+	jsonData := readStreamSourceFile()
+
+	var streamingMovies []movie
+	err := json.Unmarshal(jsonData, &streamingMovies)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sort.Slice(streamingMovies, func(i, j int) bool {
+		return streamingMovies[i].TomatoScore > streamingMovies[j].TomatoScore
+	})
+
+	for _, movie := range streamingMovies {
+		fmt.Printf("popular movie: %v - %v\n", movie.Title, movie.TomatoScore)
+	}
+
+	return streamingMovies
+}
+
+func readStreamSourceFile() []byte {
+	svc := s3.New(session.New())
+	input := &s3.GetObjectInput{
+		Bucket: aws.String("streamed-movies"),
+		Key:    aws.String("movie_stream_list.json"),
+	}
+
+	result, err := svc.GetObject(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case s3.ErrCodeNoSuchKey:
+				fmt.Println(s3.ErrCodeNoSuchKey, aerr.Error())
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			fmt.Println(err.Error())
+		}
+		return nil
+	}
+
+	fmt.Println(result)
+
+	if b, err := ioutil.ReadAll(result.Body); err == nil {
+		return b
+	}
+	return nil
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
 }
 
 func redisClient() *redis.Client {
