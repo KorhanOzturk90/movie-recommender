@@ -8,6 +8,8 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/go-redis/redis"
 	"golang.org/x/net/html"
@@ -20,8 +22,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 const cardTitle = "movieSuggester"
@@ -116,7 +116,8 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
 				recommendedMoviesDetailedList[0].Title + ", " +
 				recommendedMoviesDetailedList[1].Title + ", " +
-				recommendedMoviesDetailedList[2].Title + ", ")
+				recommendedMoviesDetailedList[2].Title + ", " +
+				recommendedMoviesDetailedList[3].Title)
 
 			return nil
 		}
@@ -130,6 +131,14 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		response.SetOutputText(speechText)
 		response.SetRepromptText(speechText)
 		response.ShouldSessionEnd = false
+
+	case "AMAZON.StopIntent":
+		log.Println("AMAZON.StopIntent triggered")
+		response.ShouldSessionEnd = true
+
+	case "AMAZON.CancelIntent":
+		log.Println("AMAZON.CancelIntent triggered")
+		response.ShouldSessionEnd = true
 
 	default:
 		return errors.New("Invalid Intent")
@@ -211,7 +220,7 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 }
 
 func getImdbIdFromMovieName(movieName string) string {
-	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
+	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), strings.Replace(movieName, " ", "+", -1))
 	omdbFilmInfo := getOmdbMovieInfo(url)
 	fmt.Printf("OMDB movie id for movieName %s -> %s \n", movieName, omdbFilmInfo.ImdbID)
 	return omdbFilmInfo.ImdbID
@@ -291,7 +300,7 @@ func parseAllStreamingMovies() []movie {
 		fmt.Printf("popular movie: %v - %v\n", movie.Title, movie.TomatoScore)
 	}
 
-	return streamingMovies
+	return streamingMovies[:5]
 }
 
 func readStreamSourceFile() []byte {

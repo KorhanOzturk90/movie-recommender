@@ -17,7 +17,7 @@ func TestAlexaHandler(t *testing.T) {
 	intentSlots:= make(map[string]alexa.IntentSlot)
 	intentSlots["movie"] = alexa.IntentSlot{
 		Name:"movie",
-		Value:"Shrek",
+		Value:"Friends with benefits",
 	}
 	intent := alexa.Intent{
 		Name: Recommended_movie_intent,
@@ -42,12 +42,7 @@ func TestAlexaHandler(t *testing.T) {
 
 	}
 
-	response, err := Handle(nil, &requestEnv)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Printf("response %v", response)
-	}
+	sendAlexaCommand(&requestEnv)
 }
 
 func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
@@ -75,7 +70,11 @@ func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
 		Session: session,
 	}
 
-	response, err := Handle(nil, &requestEnv)
+	sendAlexaCommand(&requestEnv)
+}
+
+func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) {
+	response, err := Handle(nil, requestEnv)
 	if err != nil {
 		fmt.Println(err)
 	} else {
