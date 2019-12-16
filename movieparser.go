@@ -38,6 +38,8 @@ type omdbInfo struct {
 	Type   string
 	Year   string
 	Plot   string
+	Metascore string
+	ImdbRating string
 }
 
 type movie struct {
@@ -114,10 +116,10 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			}
 			response.SetSimpleCard(cardTitle, recommendedMoviesDetailedList[0].Title)
 			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
-				recommendedMoviesDetailedList[0].Title + ", " +
-				recommendedMoviesDetailedList[1].Title + ", " +
-				recommendedMoviesDetailedList[2].Title + ", " +
-				recommendedMoviesDetailedList[3].Title)
+				recommendedMoviesDetailedList[0].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[0].ImdbRating + ", " +
+				recommendedMoviesDetailedList[1].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[1].ImdbRating + ", " +
+				recommendedMoviesDetailedList[2].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[2].ImdbRating + " and" +
+				recommendedMoviesDetailedList[3].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[3].ImdbRating)
 
 			return nil
 		}
