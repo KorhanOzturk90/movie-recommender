@@ -33,12 +33,12 @@ var (
 )
 
 type omdbInfo struct {
-	Title  string
-	ImdbID string
-	Type   string
-	Year   string
-	Plot   string
-	Metascore string
+	Title      string
+	ImdbID     string
+	Type       string
+	Year       string
+	Plot       string
+	Metascore  string
 	ImdbRating string
 }
 
@@ -71,7 +71,7 @@ func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Reque
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	speechText := "Welcome to Movie Suggester. You can get movie recommendations by saying a movie name you like."
 
-	log.Printf("OnLaunch requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+	log.Printf("OnLaunch requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
 
 	response.SetSimpleCard(cardTitle, speechText)
 	response.SetOutputText(speechText)
@@ -83,12 +83,15 @@ func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, sess
 }
 
 func (h *movieparser) OnIntent(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
-	log.Printf("OnIntent requestId=%s, sessionId=%s, intent=%s", request.RequestID, session.SessionID, request.Intent.Name)
+	log.Printf("OnIntent requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
 	return processAlexaIntent(request, response)
 }
 
 func processAlexaIntent(request *alexa.Request, response *alexa.Response) error {
 	filmToSearch := request.Intent.Slots["movie"].Value
+	if len(filmToSearch) == 0 {
+		filmToSearch = request.Intent.Slots["film"].Value
+	}
 
 	switch request.Intent.Name {
 	case Recommended_streaming_intent:
@@ -108,17 +111,28 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			movieId := getImdbIdFromMovieName(filmToSearch)
 			recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
-			var recommendedMoviesDetailedList [5]omdbInfo
-			for ind, element := range recommendedMoviesIdList {
+			var recommendedMoviesDetailedList []omdbInfo
+			ch := make(chan omdbInfo, 5)
+			for _, element := range recommendedMoviesIdList {
 				if element != "" {
-					recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
+					//recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element, c)
+					go getOmdbDetailedInfoFromId(element, ch)
 				}
+			}
+
+			for v := range ch {
+				fmt.Println("value: ", v)
+				recommendedMoviesDetailedList = append(recommendedMoviesDetailedList, v)
+				if len(recommendedMoviesDetailedList) == 4 {
+					close(ch)
+				}
+
 			}
 			response.SetSimpleCard(cardTitle, recommendedMoviesDetailedList[0].Title)
 			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
 				recommendedMoviesDetailedList[0].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[0].ImdbRating + ", " +
 				recommendedMoviesDetailedList[1].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[1].ImdbRating + ", " +
-				recommendedMoviesDetailedList[2].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[2].ImdbRating + " and" +
+				recommendedMoviesDetailedList[2].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[2].ImdbRating + " and " +
 				recommendedMoviesDetailedList[3].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[3].ImdbRating)
 
 			return nil
@@ -179,7 +193,7 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 	return ombdInfo
 }
 
-func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
+func getOmdbDetailedInfoFromId(movieID string, c chan omdbInfo) {
 	var omdbFilmInfo omdbInfo
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
 
@@ -218,7 +232,7 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 	} else { //no cache
 		omdbFilmInfo = getOmdbMovieInfo(url)
 	}
-	return omdbFilmInfo
+	c <- omdbFilmInfo
 }
 
 func getImdbIdFromMovieName(movieName string) string {

@@ -17,7 +17,7 @@ func TestAlexaHandler(t *testing.T) {
 	intentSlots:= make(map[string]alexa.IntentSlot)
 	intentSlots["movie"] = alexa.IntentSlot{
 		Name:"movie",
-		Value:"Friends with benefits",
+		Value:"The Greatest Showman",
 	}
 	intent := alexa.Intent{
 		Name: Recommended_movie_intent,
