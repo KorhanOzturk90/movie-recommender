@@ -2,10 +2,9 @@
 
 
 [[projects]]
-  digest = "1:c8bc6cc8a13405a9ebfdc76a4279d52ff3e13dd4f73766b7a1ff6b45aa609fc3"
+  digest = "1:6147b51b0178e9170e04a24da35ae6cc1d138458b5f814cb3ca39b33e8603e17"
   name = "github.com/aws/aws-lambda-go"
   packages = [
-    "events",
     "lambda",
     "lambda/handlertrace",
     "lambda/messages",
@@ -14,6 +13,54 @@
   pruneopts = "UT"
   revision = "b5b7267d297de263cc5b61f8c37543daa9c95ffd"
   version = "v1.13.3"
+
+[[projects]]
+  digest = "1:3e5c2b90c38a90270535ef402ee7c60a6bd6f7787aa59c00ad161e8f97ac3bd2"
+  name = "github.com/aws/aws-sdk-go"
+  packages = [
+    "aws",
+    "aws/arn",
+    "aws/awserr",
+    "aws/awsutil",
+    "aws/client",
+    "aws/client/metadata",
+    "aws/corehandlers",
+    "aws/credentials",
+    "aws/credentials/ec2rolecreds",
+    "aws/credentials/endpointcreds",
+    "aws/credentials/processcreds",
+    "aws/credentials/stscreds",
+    "aws/csm",
+    "aws/defaults",
+    "aws/ec2metadata",
+    "aws/endpoints",
+    "aws/request",
+    "aws/session",
+    "aws/signer/v4",
+    "internal/ini",
+    "internal/s3err",
+    "internal/sdkio",
+    "internal/sdkmath",
+    "internal/sdkrand",
+    "internal/sdkuri",
+    "internal/shareddefaults",
+    "private/protocol",
+    "private/protocol/eventstream",
+    "private/protocol/eventstream/eventstreamapi",
+    "private/protocol/json/jsonutil",
+    "private/protocol/query",
+    "private/protocol/query/queryutil",
+    "private/protocol/rest",
+    "private/protocol/restxml",
+    "private/protocol/xml/xmlutil",
+    "service/s3",
+    "service/s3/internal/arn",
+    "service/sts",
+    "service/sts/stsiface",
+  ]
+  pruneopts = "UT"
+  revision = "f421e2327a6e6566d937e4519317765f3cd0e856"
+  version = "v1.25.48"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -46,6 +93,13 @@
   pruneopts = "UT"
   revision = "7f69d5e32072d151eb6936cbe2306413e8117488"
   version = "v6.15.6"
+
+[[projects]]
+  digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
+  name = "github.com/jmespath/go-jmespath"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c2b33e84"
 
 [[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
@@ -86,8 +140,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/aws/aws-lambda-go/events",
     "github.com/aws/aws-lambda-go/lambda",
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/awserr",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/s3",
     "github.com/ericdaugherty/alexa-skills-kit-golang",
     "github.com/go-redis/redis",
     "github.com/stretchr/testify/assert",

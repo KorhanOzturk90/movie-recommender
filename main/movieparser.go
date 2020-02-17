@@ -28,11 +28,20 @@ var (
 )
 
 type omdbInfo struct {
-	Title  string
-	ImdbID string
-	Type   string
-	Year   string
-	Plot   string
+	Title      string
+	ImdbID     string
+	Type       string
+	Year       string
+	Plot       string
+	Metascore  string
+	ImdbRating string
+}
+
+type movie struct {
+	Id          int64
+	Title       string
+	Url         string
+	TomatoScore int
 }
 
 func main() {
@@ -57,7 +66,7 @@ func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Reque
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	speechText := "Welcome to Movie Suggester. You can get movie recommendations by saying a movie name you like."
 
-	log.Printf("OnLaunch requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+	log.Printf("OnLaunch requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
 
 	response.SetSimpleCard(cardTitle, speechText)
 	response.SetOutputText(speechText)
@@ -69,12 +78,15 @@ func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, sess
 }
 
 func (h *movieparser) OnIntent(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
-	log.Printf("OnIntent requestId=%s, sessionId=%s, intent=%s", request.RequestID, session.SessionID, request.Intent.Name)
+	log.Printf("OnIntent requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
 	return processAlexaIntent(request, response)
 }
 
 func processAlexaIntent(request *alexa.Request, response *alexa.Response) error {
 	filmToSearch := request.Intent.Slots["movie"].Value
+	if len(filmToSearch) == 0 {
+		filmToSearch = request.Intent.Slots["film"].Value
+	}
 
 	switch request.Intent.Name {
 	case Recommended_streaming_intent:
@@ -94,17 +106,23 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			movieId := getImdbIdFromMovieName(filmToSearch)
 			recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
-			var recommendedMoviesDetailedList [5]omdbInfo
-			for ind, element := range recommendedMoviesIdList {
-				if element != "" {
-					recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element)
-				}
+			ch := make(chan omdbInfo)
+			for _, element := range recommendedMoviesIdList {
+				go func(imdbId string) {
+					ch <- getOmdbDetailedInfoFromId(imdbId)
+				}(element)
 			}
-			response.SetSimpleCard(cardTitle, recommendedMoviesDetailedList[0].Title)
-			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
-				recommendedMoviesDetailedList[0].Title + ", " +
-				recommendedMoviesDetailedList[1].Title + ", " +
-				recommendedMoviesDetailedList[2].Title + ", ")
+
+			var responseText strings.Builder
+			for x:= 0; x < 4; x ++ {
+				recommendedMovieDetail := <- ch
+				responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
+				responseText.WriteString(recommendedMovieDetail.Title)
+				responseText.WriteString(" with a IMDB rating of " )
+				responseText.WriteString(recommendedMovieDetail.ImdbRating + " ")
+			}
+			response.SetSimpleCard(cardTitle, "movie recommender")
+			response.SetOutputText(responseText.String())
 
 			return nil
 		}
@@ -118,6 +136,14 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		response.SetOutputText(speechText)
 		response.SetRepromptText(speechText)
 		response.ShouldSessionEnd = false
+
+	case "AMAZON.StopIntent":
+		log.Println("AMAZON.StopIntent triggered")
+		response.ShouldSessionEnd = true
+
+	case "AMAZON.CancelIntent":
+		log.Println("AMAZON.CancelIntent triggered")
+		response.ShouldSessionEnd = true
 
 	default:
 		return errors.New("Invalid Intent")
@@ -139,18 +165,13 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 
 	if err != nil {
 		fmt.Print(err)
-		//os.Exit(1)
 	} else {
 		defer response.Body.Close()
 		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Print(err)
-		}
+		check(err)
 
 		jsonErr := json.Unmarshal(contents, &ombdInfo)
-		if jsonErr != nil {
-			log.Print(jsonErr)
-		}
+		check(jsonErr)
 		fmt.Printf("title %s and IMDB ID %s\n", ombdInfo.Title, ombdInfo.ImdbID)
 	}
 	return ombdInfo
@@ -199,7 +220,7 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 }
 
 func getImdbIdFromMovieName(movieName string) string {
-	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), movieName)
+	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&t=%s", os.Getenv("API_KEY"), strings.Replace(movieName, " ", "+", -1))
 	omdbFilmInfo := getOmdbMovieInfo(url)
 	fmt.Printf("OMDB movie id for movieName %s -> %s \n", movieName, omdbFilmInfo.ImdbID)
 	return omdbFilmInfo.ImdbID
@@ -258,6 +279,12 @@ func extractMovieIdFromTitleLink(link string) string {
 	return r.FindStringSubmatch(link)[1]
 }
 
+func check(e error) {
+	if e != nil {
+		fmt.Println(e)
+	}
+}
+
 func redisClient() *redis.Client {
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL") + ":6379",
@@ -268,7 +295,7 @@ func redisClient() *redis.Client {
 	_, err := redisDB.Ping().Result()
 
 	if err != nil {
-		fmt.Println(err)
+		check(err)
 	}
 
 	return redisDB
