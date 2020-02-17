@@ -6,10 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/go-redis/redis"
 	"golang.org/x/net/html"
@@ -19,7 +15,6 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -111,29 +106,23 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			movieId := getImdbIdFromMovieName(filmToSearch)
 			recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
 
-			var recommendedMoviesDetailedList []omdbInfo
-			ch := make(chan omdbInfo, 5)
+			ch := make(chan omdbInfo)
 			for _, element := range recommendedMoviesIdList {
-				if element != "" {
-					//recommendedMoviesDetailedList[ind] = getOmdbDetailedInfoFromId(element, c)
-					go getOmdbDetailedInfoFromId(element, ch)
-				}
+				go func(imdbId string) {
+					ch <- getOmdbDetailedInfoFromId(imdbId)
+				}(element)
 			}
 
-			for v := range ch {
-				fmt.Println("value: ", v)
-				recommendedMoviesDetailedList = append(recommendedMoviesDetailedList, v)
-				if len(recommendedMoviesDetailedList) == 4 {
-					close(ch)
-				}
-
+			var responseText strings.Builder
+			for x:= 0; x < 4; x ++ {
+				recommendedMovieDetail := <- ch
+				responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
+				responseText.WriteString(recommendedMovieDetail.Title)
+				responseText.WriteString(" with a IMDB rating of " )
+				responseText.WriteString(recommendedMovieDetail.ImdbRating + " ")
 			}
-			response.SetSimpleCard(cardTitle, recommendedMoviesDetailedList[0].Title)
-			response.SetOutputText("If you enjoyed " + filmToSearch + " you might also enjoy watching " +
-				recommendedMoviesDetailedList[0].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[0].ImdbRating + ", " +
-				recommendedMoviesDetailedList[1].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[1].ImdbRating + ", " +
-				recommendedMoviesDetailedList[2].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[2].ImdbRating + " and " +
-				recommendedMoviesDetailedList[3].Title + " with a IMDB rating of " + recommendedMoviesDetailedList[3].ImdbRating)
+			response.SetSimpleCard(cardTitle, "movie recommender")
+			response.SetOutputText(responseText.String())
 
 			return nil
 		}
@@ -176,24 +165,19 @@ func getOmdbMovieInfo(omdbURL string) omdbInfo {
 
 	if err != nil {
 		fmt.Print(err)
-		//os.Exit(1)
 	} else {
 		defer response.Body.Close()
 		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Print(err)
-		}
+		check(err)
 
 		jsonErr := json.Unmarshal(contents, &ombdInfo)
-		if jsonErr != nil {
-			log.Print(jsonErr)
-		}
+		check(jsonErr)
 		fmt.Printf("title %s and IMDB ID %s\n", ombdInfo.Title, ombdInfo.ImdbID)
 	}
 	return ombdInfo
 }
 
-func getOmdbDetailedInfoFromId(movieID string, c chan omdbInfo) {
+func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 	var omdbFilmInfo omdbInfo
 	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=%s&i=%s", os.Getenv("API_KEY"), movieID)
 
@@ -232,7 +216,7 @@ func getOmdbDetailedInfoFromId(movieID string, c chan omdbInfo) {
 	} else { //no cache
 		omdbFilmInfo = getOmdbMovieInfo(url)
 	}
-	c <- omdbFilmInfo
+	return omdbFilmInfo
 }
 
 func getImdbIdFromMovieName(movieName string) string {
@@ -295,65 +279,9 @@ func extractMovieIdFromTitleLink(link string) string {
 	return r.FindStringSubmatch(link)[1]
 }
 
-func parseAllStreamingMovies() []movie {
-
-	//jsonData, err := ioutil.ReadFile("movie_stream_list.json")
-	//check(err)
-
-	jsonData := readStreamSourceFile()
-
-	var streamingMovies []movie
-	err := json.Unmarshal(jsonData, &streamingMovies)
-	if err != nil {
-		log.Println(err)
-	}
-
-	sort.Slice(streamingMovies, func(i, j int) bool {
-		return streamingMovies[i].TomatoScore > streamingMovies[j].TomatoScore
-	})
-
-	for _, movie := range streamingMovies {
-		fmt.Printf("popular movie: %v - %v\n", movie.Title, movie.TomatoScore)
-	}
-
-	return streamingMovies[:5]
-}
-
-func readStreamSourceFile() []byte {
-	svc := s3.New(session.New())
-	input := &s3.GetObjectInput{
-		Bucket: aws.String("streamed-movies"),
-		Key:    aws.String("movie_stream_list.json"),
-	}
-
-	result, err := svc.GetObject(input)
-	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case s3.ErrCodeNoSuchKey:
-				fmt.Println(s3.ErrCodeNoSuchKey, aerr.Error())
-			default:
-				fmt.Println(aerr.Error())
-			}
-		} else {
-			// Print the error, cast err to awserr.Error to get the Code and
-			// Message from an error.
-			fmt.Println(err.Error())
-		}
-		return nil
-	}
-
-	fmt.Println(result)
-
-	if b, err := ioutil.ReadAll(result.Body); err == nil {
-		return b
-	}
-	return nil
-}
-
 func check(e error) {
 	if e != nil {
-		panic(e)
+		fmt.Println(e)
 	}
 }
 
@@ -367,7 +295,7 @@ func redisClient() *redis.Client {
 	_, err := redisDB.Ping().Result()
 
 	if err != nil {
-		fmt.Println(err)
+		check(err)
 	}
 
 	return redisDB

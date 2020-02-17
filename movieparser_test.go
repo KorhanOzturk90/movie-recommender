@@ -5,6 +5,7 @@ import (
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
@@ -12,21 +13,35 @@ func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
 	fmt.Println("extractor result: ", extractedMovieId)
 }
 
-func TestAlexaHandler(t *testing.T) {
+func TestAlexaHandlerWithMultipleRequests(t *testing.T) {
+	movie1 := "Lion King"
+	movie2 := "Darkest Hour"
 
-	intentSlots:= make(map[string]alexa.IntentSlot)
+	requestEnv := createAlexaRequestEnvelope(movie1)
+	requestEnv2 := createAlexaRequestEnvelope(movie2)
+
+	println("Getting recommendations for " + movie1)
+	sendAlexaCommand(&requestEnv)
+	time.Sleep(time.Second * 1)
+
+	println("\n\n\nGetting recommendations for " + movie2)
+	sendAlexaCommand(&requestEnv2)
+}
+
+func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
+	intentSlots := make(map[string]alexa.IntentSlot)
 	intentSlots["movie"] = alexa.IntentSlot{
-		Name:"movie",
-		Value:"The Greatest Showman",
+		Name:  "movie",
+		Value: movieName,
 	}
 	intent := alexa.Intent{
-		Name: Recommended_movie_intent,
+		Name:  Recommended_movie_intent,
 		Slots: intentSlots,
 	}
 
 	request := alexa.Request{
 		Intent: intent,
-		Type: "IntentRequest",
+		Type:   "IntentRequest",
 	}
 
 	att := alexa.Session{}.Attributes
@@ -39,10 +54,8 @@ func TestAlexaHandler(t *testing.T) {
 	requestEnv := alexa.RequestEnvelope{
 		Request: &request,
 		Session: session,
-
 	}
-
-	sendAlexaCommand(&requestEnv)
+	return requestEnv
 }
 
 func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
@@ -78,7 +91,7 @@ func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("response: %v", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text )
+		fmt.Printf("response: %v\n", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text )
 	}
 }
 
