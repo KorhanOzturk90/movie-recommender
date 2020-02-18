@@ -114,9 +114,9 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			}
 
 			var responseText strings.Builder
+			responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
 			for x:= 0; x < 4; x ++ {
 				recommendedMovieDetail := <- ch
-				responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
 				responseText.WriteString(recommendedMovieDetail.Title)
 				responseText.WriteString(" with a IMDB rating of " )
 				responseText.WriteString(recommendedMovieDetail.ImdbRating + " ")
