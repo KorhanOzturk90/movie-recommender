@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 GOFILE=${1:-"movieparser"}
 PROFILE=${2:-"default"}
 
