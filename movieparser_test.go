@@ -69,7 +69,8 @@ func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
 
 func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
 
-	intentSlots:= make(map[string]alexa.IntentSlot)
+	t.Skip("Skipping movie parser testing for now.")
+	intentSlots := make(map[string]alexa.IntentSlot)
 
 	intent := alexa.Intent{
 		Name:  Recommended_streaming_intent,
@@ -77,7 +78,7 @@ func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
 	}
 	request := alexa.Request{
 		Intent: intent,
-		Type: "IntentRequest",
+		Type:   "IntentRequest",
 	}
 
 	att := alexa.Session{}.Attributes
@@ -100,10 +101,9 @@ func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("response: %v\n", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text )
+		fmt.Printf("response: %v\n", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text)
 	}
 }
-
 
 func TestAlexaHandlerNoMovieSpecified(t *testing.T) {
 	intentMap := make(map[string]alexa.IntentSlot)
