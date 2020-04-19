@@ -1,4 +1,4 @@
-package main
+package moviesuggester
 
 import (
 	"encoding/json"
@@ -62,4 +62,3 @@ func readStreamSourceFile() []byte {
 	}
 	return nil
 }
-

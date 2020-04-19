@@ -5,7 +5,7 @@ jobs:
       - image: circleci/golang:1.12
 
     environment: # environment variables for the build itself
-      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+      CACHE_ENABLED: false
 
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
@@ -13,3 +13,13 @@ jobs:
       - run: go build -v
       - run: go test -v
 
+nightly:
+  triggers:
+    - schedule:
+        cron: "0 22 * * *"
+        filters:
+          branches:
+            only:
+              - master
+  jobs:
+    - build
