@@ -2,6 +2,9 @@
 
 This is a simple movie suggestion engine that recommends movies from IMDB similar to the one specified. The aim of the project is to teach myself to write code in Golang
 
+
+[![CircleCI](https://circleci.com/gh/KorhanOzturk90/movie-suggester.svg?style=svg)](https://circleci.com/gh/KorhanOzturk90/movie-suggester)
+
 ## Alexa Skill Link
 The algorithm can be used as an alexa skill from the following link:
 
