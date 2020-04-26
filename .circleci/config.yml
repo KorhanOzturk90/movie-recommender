@@ -13,13 +13,11 @@ jobs:
       - run: go build -v
       - run: go test -v
 
-nightly:
-  triggers:
-    - schedule:
-        cron: "0 22 * * *"
-        filters:
-          branches:
-            only:
-              - master
-  jobs:
-    - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 22 * * *"
+          filters:
+            branches:
+              only:
+                - master

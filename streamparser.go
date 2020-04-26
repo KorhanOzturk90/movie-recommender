@@ -1,4 +1,4 @@
-package moviesuggester
+package main
 
 import (
 	"encoding/json"

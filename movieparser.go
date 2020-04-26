@@ -1,4 +1,4 @@
-package moviesuggester
+package main
 
 import (
 	"context"
@@ -46,7 +46,6 @@ type movie struct {
 
 func main() {
 	lambda.Start(Handle)
-
 }
 
 type movieparser struct {
@@ -122,7 +121,7 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 			for x := 0; x < 4; x++ {
 				recommendedMovieDetail := <-ch
 				responseText.WriteString(recommendedMovieDetail.Title)
-				responseText.WriteString(" with a IMDB rating of ")
+				responseText.WriteString(" with a rating of ")
 				responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
 			}
 			response.SetSimpleCard(cardTitle, "movie recommender")
