@@ -34,7 +34,10 @@ func TestAlexaHandlerWithNonExistingMovie(t *testing.T) {
 	requestEnv := createAlexaRequestEnvelope(movie1)
 
 	println("Getting recommendations for " + movie1)
-	sendAlexaCommand(&requestEnv)
+	response := sendAlexaCommand(&requestEnv)
+	assert.Equal(t, "Sorry, cannot find the movie "+movie1+" please make sure you use the correct name",
+		response.Response.OutputSpeech.Text, "Unknown movie message error")
+	assert.Equal(t, false, response.Response.ShouldSessionEnd)
 }
 
 func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
@@ -56,9 +59,10 @@ func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
 	att := alexa.Session{}.Attributes
 
 	session := &alexa.Session{
-		SessionID:  "testId",
+		SessionID:  "amzn1.echo-api.session.ee60a355-25ce-463f-a1d2-f3cd1c98a575",
 		Attributes: att,
 	}
+	session.User.UserID = "amzn1.ask.account.AEEEJ7PUOPEKQR3AIGJOAFU5W4K273VCIFCJTKPOQ3CKURU2PUWUABCYYVKCKK466ASTAWEGF2X7S57I3E7RGBDTLBLF3HRPZBXSHDINBCXLRXURY6DNNLZXWE5F6LRSJYQ4KGHWF5KSBPXP4HBJAKRHKU32H3CCB4XPCIJOJAIHRB76PZR3GXW3JYFTBSB4MXTFW54OECM6GBA"
 
 	requestEnv := alexa.RequestEnvelope{
 		Request: &request,
@@ -96,13 +100,15 @@ func TestAlexaTopStreamingMoviesHandler(t *testing.T) {
 	sendAlexaCommand(&requestEnv)
 }
 
-func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) {
-	response, err := Handle(nil, requestEnv)
+func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) *alexa.ResponseEnvelope {
+
+	response, err := alexaMetaData.ProcessRequest(nil, requestEnv)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("response: %v\n", response.(*alexa.ResponseEnvelope).Response.OutputSpeech.Text)
+		fmt.Printf("response: %v\n", response.Response.OutputSpeech.Text)
 	}
+	return response
 }
 
 func TestAlexaHandlerNoMovieSpecified(t *testing.T) {

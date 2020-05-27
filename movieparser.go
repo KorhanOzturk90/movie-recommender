@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
@@ -21,6 +20,7 @@ import (
 
 const cardTitle = "movieSuggester"
 const Recommended_movie_intent = "movieparserIntent"
+const Recommended_series_intent = "tvSeriesIntent"
 const Recommended_streaming_intent = "topstreamingIntent"
 
 var (
@@ -57,14 +57,15 @@ func Handle(ctx context.Context, requestEnv *alexa.RequestEnvelope) (interface{}
 
 func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 
-	log.Printf("OnSessionStarted requestId=%s, sessionId=%s", request.RequestID, session.SessionID)
+	log.Printf("OnSessionStarted session=%v, request=%v", session, request)
 	return nil
 }
 
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
-	speechText := "Welcome to Movie Suggester. You can get movie recommendations by saying a movie name you like."
+	speechText := "Welcome to Movie Suggester. You can get great movie or series recommendations similar to the ones you like. " +
+		"Just say the name of the movie or tv series you want suggestions similar to."
 
-	log.Printf("OnLaunch requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
+	log.Printf("OnLaunch deviceId=%v, session=%v, request=%v", ctx_ptr.System.Device.DeviceID, session, request)
 
 	response.SetSimpleCard(cardTitle, speechText)
 	response.SetOutputText(speechText)
@@ -76,17 +77,14 @@ func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, sess
 }
 
 func (h *movieparser) OnIntent(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
-	log.Printf("OnIntent requestId=%s, sessionId=%s, request=%v", request.RequestID, session.SessionID, request)
+	log.Printf("OnIntent userId=%s, sessionId=%s, requestId=%s", session.User.UserID, session.SessionID, request.RequestID)
 	return processAlexaIntent(request, response)
 }
 
 func processAlexaIntent(request *alexa.Request, response *alexa.Response) error {
-	filmToSearch := request.Intent.Slots["movie"].Value
-	if len(filmToSearch) == 0 {
-		filmToSearch = request.Intent.Slots["film"].Value
-	}
 
 	switch request.Intent.Name {
+
 	case Recommended_streaming_intent:
 		topStreamingMovies := parseAllStreamingMovies()
 		var responseText = "The highly rated top 5 movies streaming are "
@@ -95,44 +93,22 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		}
 		response.SetSimpleCard(cardTitle, "stream")
 		response.SetOutputText(responseText)
+		return nil
 
 	case Recommended_movie_intent:
+		filmToSearch := request.Intent.Slots["movie"].Value
 		log.Printf("movieparser Intent triggered with %s", filmToSearch)
-		if len(filmToSearch) == 0 {
-			response.SetOutputText("Please make sure you specify the movie name based on which recommendations will be made")
-		} else {
-			movieId := getImdbIdFromMovieName(filmToSearch)
-			if len(movieId) == 0 {
-				log.Printf("Could not find the movie %s in omdb..", filmToSearch)
-				response.SetOutputText("cannot find the movie " + filmToSearch + " please make sure you use the correct name")
-				return nil
-			}
+		findRecommendations(request, filmToSearch, response)
 
-			recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
-			ch := make(chan omdbInfo)
-			for _, element := range recommendedMoviesIdList {
-				go func(imdbId string) {
-					ch <- getOmdbDetailedInfoFromId(imdbId)
-				}(element)
-			}
-
-			var responseText strings.Builder
-			responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
-			for x := 0; x < 4; x++ {
-				recommendedMovieDetail := <-ch
-				responseText.WriteString(recommendedMovieDetail.Title)
-				responseText.WriteString(" with a rating of ")
-				responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
-			}
-			response.SetSimpleCard(cardTitle, "movie recommender")
-			response.SetOutputText(responseText.String())
-
-			return nil
-		}
+	case Recommended_series_intent:
+		seriesName := request.Intent.Slots["seriesName"].Value
+		log.Printf("tvSeries Intent triggered with %s", seriesName)
+		findRecommendations(request, seriesName, response)
 
 	case "AMAZON.HelpIntent":
 		log.Println("AMAZON.HelpIntent triggered")
-		speechText := "You can use this app to get movie or tv series recommendations similar to the ones you like. Just say the name of the movie!"
+		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. You can use it by saying get movies" +
+			" similar to Titanic for example. Just replace Titanic with your favourite movie!"
 
 		response.SetSimpleCard(cardTitle, speechText)
 		response.SetOutputText(speechText)
@@ -147,11 +123,55 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		log.Println("AMAZON.CancelIntent triggered")
 		response.ShouldSessionEnd = true
 
+	case "AMAZON.FallbackIntent":
+		log.Println("AMAZON.FallbackIntent triggered")
+		handleFallback(response)
+
 	default:
-		return errors.New("Invalid Intent")
+		log.Println("Could not match any intents")
+		handleFallback(response)
 	}
 
 	return nil
+}
+
+func findRecommendations(request *alexa.Request, filmToSearch string, response *alexa.Response) {
+	if request.Intent.ConfirmationStatus == "DENIED" {
+		log.Printf("User confirmation denied for %s", filmToSearch)
+		if request.Intent.Name == Recommended_movie_intent {
+			response.SetOutputText("You can start over by saying recommend me a movie like and the name of the movie")
+		} else {
+			response.SetOutputText("You can start over by saying recommend tv series like and the name of the series")
+		}
+		response.ShouldSessionEnd = false
+	} else {
+		movieId := getImdbIdFromMovieName(filmToSearch)
+		if len(movieId) == 0 {
+			log.Printf("Could not find the movie %s in omdb..", filmToSearch)
+			response.SetOutputText("Sorry, cannot find the movie " + filmToSearch + " please make sure you use the correct name")
+			response.ShouldSessionEnd = false
+			return
+		}
+
+		recommendedMoviesIdList := readImdbPageSource("https://www.imdb.com/title/" + movieId)
+		ch := make(chan omdbInfo)
+		for _, element := range recommendedMoviesIdList {
+			go func(imdbId string) {
+				ch <- getOmdbDetailedInfoFromId(imdbId)
+			}(element)
+		}
+
+		var responseText strings.Builder
+		responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
+		for x := 0; x < 4; x++ {
+			recommendedMovieDetail := <-ch
+			responseText.WriteString(recommendedMovieDetail.Title)
+			responseText.WriteString(" with a rating of ")
+			responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
+		}
+		response.SetSimpleCard(cardTitle, "movie recommender")
+		response.SetOutputText(responseText.String())
+	}
 }
 
 func (h *movieparser) OnSessionEnded(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
@@ -196,24 +216,18 @@ func getOmdbDetailedInfoFromId(movieID string) omdbInfo {
 			omdbFilmInfo = getOmdbMovieInfo(url)
 
 			moviePayloadInJson, err := json.Marshal(omdbFilmInfo)
-			if err != nil {
-				fmt.Println(err)
-			}
+			check(err)
 
 			//Put the movie in the cache
 			errCache := redisCache.Set(movieID, string(moviePayloadInJson), 0).Err()
-			if errCache != nil {
-				log.Printf("An error occurred while trying to cache the element: %s\n", errCache)
-			}
+			check(errCache)
 
 		} else if err != nil {
 			log.Printf("An error occurred while trying to connect to the cache: %s\n", err)
 		} else {
 			fmt.Printf("movie with ID %s found in the cache -> %s\n", movieID, cachedMovie)
 			jsonErr := json.Unmarshal(cachedMovie, &omdbFilmInfo)
-			if jsonErr != nil {
-				log.Print(jsonErr)
-			}
+			check(jsonErr)
 		}
 	} else { //no cache
 		omdbFilmInfo = getOmdbMovieInfo(url)
@@ -285,6 +299,14 @@ func check(e error) {
 	if e != nil {
 		fmt.Println(e)
 	}
+}
+
+func handleFallback(response *alexa.Response) {
+	invalidText := "Sorry, I couldn't find that"
+	response.SetSimpleCard(cardTitle, invalidText)
+	response.SetOutputText(invalidText)
+	response.SetRepromptText("Please try with a different movie or series name")
+	response.ShouldSessionEnd = false
 }
 
 func redisClient() *redis.Client {
