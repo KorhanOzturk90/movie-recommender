@@ -63,7 +63,7 @@ func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Reque
 
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	speechText := "Welcome to Movie Suggester. You can get great movie or series recommendations similar to the ones you like. " +
-		"Just say the name of the movie or tv series you want suggestions similar to."
+		"Just say the name a movie or series you like followed by please. For example \"Interstellar please\""
 
 	log.Printf("OnLaunch deviceId=%v, session=%v, request=%v", ctx_ptr.System.Device.DeviceID, session, request)
 
@@ -96,7 +96,15 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		return nil
 
 	case Recommended_movie_intent:
-		filmToSearch := request.Intent.Slots["movie"].Value
+		var filmToSearch string
+		if len(request.Intent.Slots["movie"].Value) > 0 {
+			filmToSearch = request.Intent.Slots["movie"].Value
+		} else if len(request.Intent.Slots["movieQuery"].Value) > 0 {
+			filmToSearch = request.Intent.Slots["movieQuery"].Value
+		} else {
+			handleFallback(response)
+			return nil
+		}
 		log.Printf("movieparser Intent triggered with %s", filmToSearch)
 		findRecommendations(request, filmToSearch, response)
 

@@ -1,0 +1,202 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "movie suggester",
+      "modelConfiguration": {
+        "fallbackIntentSensitivity": {
+          "level": "MEDIUM"
+        }
+      },
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+            "cancel"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "help me",
+            "help"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "leave me alone",
+            "hush",
+            "enough",
+            "goodbye",
+            "close",
+            "shush",
+            "shut up",
+            "quit",
+            "stop",
+            "exit"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": [
+            "return home",
+            "home page",
+            "home again",
+            "let's go home",
+            "back home",
+            "home"
+          ]
+        },
+        {
+          "name": "movieparserIntent",
+          "slots": [
+            {
+              "name": "movie",
+              "type": "AMAZON.Movie"
+            },
+            {
+              "name": "movieQuery",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "romantic comedies like {movieQuery}",
+            "make a suggestion like {movieQuery}",
+            "get films like {movieQuery}",
+            "{movie}",
+            "movie like {movieQuery}",
+            "movies like {movieQuery}",
+            "movies similar to {movieQuery}",
+            "movie similar to {movieQuery}",
+            "films like {movieQuery}",
+            "film like {movieQuery}",
+            "something like {movieQuery}",
+            "something similar to {movieQuery}",
+            "suggest a movie similar to {movieQuery}",
+            "tell me movies similar to {movieQuery}",
+            "tell me movie like {movieQuery}",
+            "get a movie similar to {movieQuery}",
+            "get movies similar to {movieQuery}",
+            "recommend a movie like {movieQuery}",
+            "recommend me movies like {movieQuery}",
+            "recommend me a movie like {movieQuery}",
+            "suggest me a movie like {movieQuery}",
+            "suggest a movie like {movieQuery}",
+            "tv series like {movieQuery}",
+            "I need tv series like {movieQuery}",
+            "I want tv series similar to {movieQuery}",
+            "tv series similar to {movieQuery}",
+            "tell me tv series like {movieQuery}",
+            "suggest a tv series similar to {movieQuery}",
+            "tell me tv series similar to {movieQuery}",
+            "tell me tv series like {movieQuery}",
+            "get tv series similar to {movieQuery}",
+            "recommend a tv series like {movieQuery}",
+            "recommend me tv series like {movieQuery}",
+            "recommend me a tv series like {movieQuery}",
+            "suggest me a tv series like {movieQuery}",
+            "suggest a tv series like {movieQuery}",
+            "tv show similar to {movieQuery}",
+            "suggest tv show similar to {movieQuery}",
+            "tell me tv show similar to {movieQuery}",
+            "tell me tv show like {movieQuery}",
+            "get tv show similar to {movieQuery}",
+            "recommend a tv show like {movieQuery}",
+            "recommend me tv show like {movieQuery}",
+            "recommend me a tv show like {movieQuery}",
+            "suggest me a tv show like {movieQuery}",
+            "suggest a tv show like {movieQuery}"
+          ]
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "movieparserIntent",
+          "confirmationRequired": true,
+          "prompts": {
+            "confirmation": "Confirm.Intent.431540529703"
+          },
+          "slots": [
+            {
+              "name": "movie",
+              "type": "AMAZON.Movie",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
+            },
+            {
+              "name": "movieQuery",
+              "type": "AMAZON.SearchQuery",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Confirm.Intent.431540529703",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you want movies similar to {movieQuery} , right?"
+          },
+          {
+            "type": "PlainText",
+            "value": "you want movies similar to {movie} , right?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.431540529703.57273370664",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "name the movie you want please"
+          },
+          {
+            "type": "PlainText",
+            "value": "Please say the name of the movie you like"
+          }
+        ]
+      },
+      {
+        "id": "Confirm.Intent.441024896009",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you want tv series similar to {movie} , right?"
+          }
+        ]
+      },
+      {
+        "id": "Confirm.Intent.1457286267354",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you want recommendations similar to {film} , right?"
+          }
+        ]
+      },
+      {
+        "id": "Confirm.Intent.391247604631",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you want tv series similar to {seriesName} , right?"
+          }
+        ]
+      }
+    ]
+  }
+}
