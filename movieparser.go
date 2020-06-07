@@ -97,8 +97,8 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 
 	case Recommended_movie_intent:
 		var filmToSearch string
-		if len(request.Intent.Slots["movie"].Value) > 0 {
-			filmToSearch = request.Intent.Slots["movie"].Value
+		if len(request.Intent.Slots["movieName"].Value) > 0 {
+			filmToSearch = request.Intent.Slots["movieName"].Value
 		} else if len(request.Intent.Slots["movieQuery"].Value) > 0 {
 			filmToSearch = request.Intent.Slots["movieQuery"].Value
 		} else {
@@ -115,8 +115,8 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 
 	case "AMAZON.HelpIntent":
 		log.Println("AMAZON.HelpIntent triggered")
-		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. You can use it by saying get movies" +
-			" similar to Titanic for example. Just replace Titanic with your favourite movie!"
+		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. To get started, name a movie or tv series you liked followed by please! " +
+			"For example Titanic please!"
 
 		response.SetSimpleCard(cardTitle, speechText)
 		response.SetOutputText(speechText)
@@ -171,13 +171,13 @@ func findRecommendations(request *alexa.Request, filmToSearch string, response *
 
 		var responseText strings.Builder
 		responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
-		for x := 0; x < 4; x++ {
+		for x := 0; x < 5; x++ {
 			recommendedMovieDetail := <-ch
 			responseText.WriteString(recommendedMovieDetail.Title)
-			responseText.WriteString(" with a rating of ")
+			responseText.WriteString(" rated ")
 			responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
 		}
-		response.SetSimpleCard(cardTitle, "movie recommender")
+		response.SetSimpleCard("Movie Suggestions", responseText.String())
 		response.SetOutputText(responseText.String())
 	}
 }
@@ -250,17 +250,17 @@ func getImdbIdFromMovieName(movieName string) string {
 	return omdbFilmInfo.ImdbID
 }
 
-func readImdbPageSource(url string) [5]string {
+func readImdbPageSource(url string) []string {
 	resp, _ := http.Get(url)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
 	fmt.Println("links list ", recommendedLinkList)
-	return recommendedLinkList
+	return recommendedLinkList[5:10]
 }
 
-func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
+func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [10]string {
 	var foundFags bool
-	var recommendedMoviesIdsList [5]string
+	var recommendedMoviesIdsList [10]string
 	count := 0
 
 	z := html.NewTokenizer(source)
@@ -282,7 +282,7 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 						if foundFags {
 							recommendedMoviesIdsList[count] = extractMovieIdFromTitleLink(a.Val)
 							count += 1
-							if count == 5 {
+							if count == 10 {
 								return recommendedMoviesIdsList
 							}
 							break

@@ -15,7 +15,7 @@ func TestLinkExtractMovieIdFromTitleLink(*testing.T) {
 
 func TestAlexaHandlerWithMultipleRequests(t *testing.T) {
 	movie1 := "Lion King"
-	movie2 := "Darkest Hour"
+	movie2 := "American Sniper"
 
 	requestEnv := createAlexaRequestEnvelope(movie1)
 	requestEnv2 := createAlexaRequestEnvelope(movie2)
@@ -25,11 +25,14 @@ func TestAlexaHandlerWithMultipleRequests(t *testing.T) {
 	time.Sleep(time.Second * 1)
 
 	println("\n\n\nGetting recommendations for " + movie2)
-	sendAlexaCommand(&requestEnv2)
+	response := sendAlexaCommand(&requestEnv2)
+
+	assert.Contains(t, response.Response.OutputSpeech.Text, "If you enjoyed "+movie2+" you might also enjoy watching ",
+		"Expected response not returned")
 }
 
 func TestAlexaHandlerWithNonExistingMovie(t *testing.T) {
-	movie1 := "the good the bad the ugly"
+	movie1 := "this movie don't exist"
 
 	requestEnv := createAlexaRequestEnvelope(movie1)
 
@@ -42,8 +45,8 @@ func TestAlexaHandlerWithNonExistingMovie(t *testing.T) {
 
 func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
 	intentSlots := make(map[string]alexa.IntentSlot)
-	intentSlots["movie"] = alexa.IntentSlot{
-		Name:  "movie",
+	intentSlots["movieName"] = alexa.IntentSlot{
+		Name:  "movieName",
 		Value: movieName,
 	}
 	intent := alexa.Intent{
@@ -109,17 +112,6 @@ func sendAlexaCommand(requestEnv *alexa.RequestEnvelope) *alexa.ResponseEnvelope
 		fmt.Printf("response: %v\n", response.Response.OutputSpeech.Text)
 	}
 	return response
-}
-
-func TestAlexaHandlerNoMovieSpecified(t *testing.T) {
-	intentMap := make(map[string]alexa.IntentSlot)
-	intent := alexa.Intent{"movieparserIntent", "", intentMap}
-	alexaRequest := alexa.Request{"", "", "", "", "", intent, "movie suggester"}
-	outputSpeech := alexa.OutputSpeech{"", "", ""}
-	card := alexa.Card{"", "", "", "", nil}
-	alexaResponse := alexa.Response{&outputSpeech, &card, nil, nil, true}
-	processAlexaIntent(&alexaRequest, &alexaResponse)
-	assert.Equal(t, "Please make sure you specify the movie name based on which recommendations will be made", alexaResponse.OutputSpeech.Text, "Error message should be returned when there is no movie name!")
 }
 
 func TestExtractMovieTitleFromLinkRegex(t *testing.T) {
