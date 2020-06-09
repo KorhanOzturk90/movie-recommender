@@ -63,7 +63,7 @@ func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Reque
 
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	speechText := "Welcome to Movie Suggester. You can get great movie or series recommendations similar to the ones you like. " +
-		"Just say the name a movie or series you like followed by please. For example \"Interstellar please\""
+		"You can say movies, or tv series to get started"
 
 	log.Printf("OnLaunch deviceId=%v, session=%v, request=%v", ctx_ptr.System.Device.DeviceID, session, request)
 
@@ -97,9 +97,7 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 
 	case Recommended_movie_intent:
 		var filmToSearch string
-		if len(request.Intent.Slots["movieName"].Value) > 0 {
-			filmToSearch = request.Intent.Slots["movieName"].Value
-		} else if len(request.Intent.Slots["movieQuery"].Value) > 0 {
+		if len(request.Intent.Slots["movieQuery"].Value) > 0 {
 			filmToSearch = request.Intent.Slots["movieQuery"].Value
 		} else {
 			handleFallback(response)
@@ -109,14 +107,13 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		findRecommendations(request, filmToSearch, response)
 
 	case Recommended_series_intent:
-		seriesName := request.Intent.Slots["seriesName"].Value
+		seriesName := request.Intent.Slots["series"].Value
 		log.Printf("tvSeries Intent triggered with %s", seriesName)
 		findRecommendations(request, seriesName, response)
 
 	case "AMAZON.HelpIntent":
 		log.Println("AMAZON.HelpIntent triggered")
-		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. To get started, name a movie or tv series you liked followed by please! " +
-			"For example Titanic please!"
+		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. You can start by saying movies, or tv series."
 
 		response.SetSimpleCard(cardTitle, speechText)
 		response.SetOutputText(speechText)
@@ -147,9 +144,9 @@ func findRecommendations(request *alexa.Request, filmToSearch string, response *
 	if request.Intent.ConfirmationStatus == "DENIED" {
 		log.Printf("User confirmation denied for %s", filmToSearch)
 		if request.Intent.Name == Recommended_movie_intent {
-			response.SetOutputText("You can start over by saying recommend me a movie like and the name of the movie")
+			response.SetOutputText("Name a movie you enjoyed please")
 		} else {
-			response.SetOutputText("You can start over by saying recommend tv series like and the name of the series")
+			response.SetOutputText("Name a tv series you enjoyed please")
 		}
 		response.ShouldSessionEnd = false
 	} else {
@@ -250,17 +247,17 @@ func getImdbIdFromMovieName(movieName string) string {
 	return omdbFilmInfo.ImdbID
 }
 
-func readImdbPageSource(url string) []string {
+func readImdbPageSource(url string) [5]string {
 	resp, _ := http.Get(url)
 
 	recommendedLinkList := getListOfRecommendedFilmsFromIMDBSource(resp.Body)
 	fmt.Println("links list ", recommendedLinkList)
-	return recommendedLinkList[5:10]
+	return recommendedLinkList
 }
 
-func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [10]string {
+func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [5]string {
 	var foundFags bool
-	var recommendedMoviesIdsList [10]string
+	var recommendedMoviesIdsList [5]string
 	count := 0
 
 	z := html.NewTokenizer(source)
@@ -282,7 +279,7 @@ func getListOfRecommendedFilmsFromIMDBSource(source io.Reader) [10]string {
 						if foundFags {
 							recommendedMoviesIdsList[count] = extractMovieIdFromTitleLink(a.Val)
 							count += 1
-							if count == 10 {
+							if count == 5 {
 								return recommendedMoviesIdsList
 							}
 							break
