@@ -11,17 +11,21 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const cardTitle = "movieSuggester"
 const Recommended_movie_intent = "movieparserIntent"
 const Recommended_series_intent = "tvSeriesIntent"
 const Recommended_streaming_intent = "topstreamingIntent"
+const Recommended_genre_intent = "genreIntent"
+const NO_GENRE_MOVIES = 5
 
 var (
 	alexaMetaData = &alexa.Alexa{ApplicationID: "amzn1.ask.skill.27d938e4-00fb-462b-83fe-633ddcf27386", RequestHandler: &movieparser{}, IgnoreApplicationID: true, IgnoreTimestamp: true}
@@ -44,6 +48,19 @@ type movie struct {
 	TomatoScore int
 }
 
+type GenreMovies struct {
+	Context string `json:"@context"`
+	Type    string `json:"@type"`
+	About   struct {
+		Type            string `json:"@type"`
+		ItemListElement []struct {
+			Type     string `json:"@type"`
+			Position string `json:"position"`
+			URL      string `json:"url"`
+		} `json:"itemListElement"`
+	} `json:"about"`
+}
+
 func main() {
 	lambda.Start(Handle)
 }
@@ -63,7 +80,7 @@ func (h *movieparser) OnSessionStarted(ctx context.Context, request *alexa.Reque
 
 func (h *movieparser) OnLaunch(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {
 	speechText := "Welcome to Movie Suggester. You can get great movie or series recommendations similar to the ones you like. " +
-		"You can say movies, or tv series to get started"
+		"You can say movies, or tv series to get started. Alternatively you can say genre to specify which type of movies you want"
 
 	log.Printf("OnLaunch deviceId=%v, session=%v, request=%v", ctx_ptr.System.Device.DeviceID, session, request)
 
@@ -111,9 +128,41 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		log.Printf("tvSeries Intent triggered with %s", seriesName)
 		findRecommendations(request, seriesName, response)
 
+	case Recommended_genre_intent:
+		genre := request.Intent.Slots["genre"].Resolutions.ResolutionsPerAuthority[0].Values[0].Value.Name
+		if request.Intent.ConfirmationStatus == "DENIED" {
+			log.Printf("User confirmation denied for genre: %s", genre)
+			response.SetOutputText("Name a genre you'd like movie recommendations in please")
+			response.ShouldSessionEnd = false
+			return nil
+		}
+		log.Printf("genre Intent triggered with %s", genre)
+		dat := readStreamSourceFile("moviesuggester", genre+".json")
+
+		var allMoviesForGenre GenreMovies
+
+		err := json.Unmarshal(dat, &allMoviesForGenre)
+		check(err)
+
+		rand.Seed(time.Now().UnixNano())
+		ch := make(chan omdbInfo)
+
+		for x := 0; x < NO_GENRE_MOVIES; x++ {
+			randomIndex := rand.Intn(len(allMoviesForGenre.About.ItemListElement))
+			urlSelected := allMoviesForGenre.About.ItemListElement[randomIndex].URL
+			r, _ := regexp.Compile("/title/([a-zA-Z0-9]+)/")
+			randMovieId := r.FindStringSubmatch(urlSelected)[1]
+
+			go func(imdbId string) {
+				ch <- getOmdbDetailedInfoFromId(imdbId)
+			}(randMovieId)
+		}
+
+		readRecommendationsFromTheChannel("I've found the following movies for "+genre+", ", ch, response)
+
 	case "AMAZON.HelpIntent":
 		log.Println("AMAZON.HelpIntent triggered")
-		speechText := "Use this skill to get movie or tv series recommendations similar to the ones you like. You can start by saying movies, or tv series."
+		speechText := "Use this skill to get movie or tv series recommendations. You can start by saying movies, tv series or genre."
 
 		response.SetSimpleCard(cardTitle, speechText)
 		response.SetOutputText(speechText)
@@ -136,7 +185,6 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		log.Println("Could not match any intents")
 		handleFallback(response)
 	}
-
 	return nil
 }
 
@@ -165,18 +213,21 @@ func findRecommendations(request *alexa.Request, filmToSearch string, response *
 				ch <- getOmdbDetailedInfoFromId(imdbId)
 			}(element)
 		}
-
-		var responseText strings.Builder
-		responseText.WriteString("If you enjoyed " + filmToSearch + " you might also enjoy watching ")
-		for x := 0; x < 5; x++ {
-			recommendedMovieDetail := <-ch
-			responseText.WriteString(recommendedMovieDetail.Title)
-			responseText.WriteString(" rated ")
-			responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
-		}
-		response.SetSimpleCard("Movie Suggestions", responseText.String())
-		response.SetOutputText(responseText.String())
+		readRecommendationsFromTheChannel("If you enjoyed "+filmToSearch+" you might also enjoy watching ", ch, response)
 	}
+}
+
+func readRecommendationsFromTheChannel(initialText string, ch chan omdbInfo, response *alexa.Response) {
+	var responseText strings.Builder
+	responseText.WriteString(initialText)
+	for x := 0; x < 5; x++ {
+		recommendedMovieDetail := <-ch
+		responseText.WriteString(recommendedMovieDetail.Title)
+		responseText.WriteString(" rated ")
+		responseText.WriteString(recommendedMovieDetail.ImdbRating + ", ")
+	}
+	response.SetSimpleCard("Movie Suggestions", responseText.String())
+	response.SetOutputText(responseText.String())
 }
 
 func (h *movieparser) OnSessionEnded(ctx context.Context, request *alexa.Request, session *alexa.Session, ctx_ptr *alexa.Context, response *alexa.Response) error {

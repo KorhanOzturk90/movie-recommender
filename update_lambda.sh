@@ -7,4 +7,4 @@ PROFILE=${2:-"default"}
 
 GOOS=linux go build -a -o ${GOFILE}
 zip movie_deployment.zip ${GOFILE}
-aws --profile ${PROFILE} lambda update-function-code --function-name movieRecommenderTest --zip-file fileb://movie_deployment.zip --region eu-west-1
+aws --profile ${PROFILE} lambda update-function-code --function-name movieRecommender --zip-file fileb://movie_deployment.zip --region eu-west-1

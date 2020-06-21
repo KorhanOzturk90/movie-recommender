@@ -14,7 +14,7 @@ import (
 
 func parseAllStreamingMovies() []movie {
 
-	jsonData := readStreamSourceFile()
+	jsonData := readStreamSourceFile("streamed-movies", "movie_stream_list.json")
 
 	var streamingMovies []movie
 	err := json.Unmarshal(jsonData, &streamingMovies)
@@ -33,11 +33,14 @@ func parseAllStreamingMovies() []movie {
 	return streamingMovies[:5]
 }
 
-func readStreamSourceFile() []byte {
-	svc := s3.New(session.New())
+func readStreamSourceFile(bucketName string, fileName string) []byte {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("eu-west-1")},
+	)
+	svc := s3.New(sess)
 	input := &s3.GetObjectInput{
-		Bucket: aws.String("streamed-movies"),
-		Key:    aws.String("movie_stream_list.json"),
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(fileName),
 	}
 
 	result, err := svc.GetObject(input)

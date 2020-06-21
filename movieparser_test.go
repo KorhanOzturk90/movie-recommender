@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ericdaugherty/alexa-skills-kit-golang"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 	"time"
 )
@@ -41,6 +43,17 @@ func TestAlexaHandlerWithNonExistingMovie(t *testing.T) {
 	assert.Equal(t, "Sorry, cannot find the movie "+movie1+" please make sure you use the correct name",
 		response.Response.OutputSpeech.Text, "Unknown movie message error")
 	assert.Equal(t, false, response.Response.ShouldSessionEnd)
+}
+
+func TestAlexaHandlerWithMovieGenre(t *testing.T) {
+
+	var request *alexa.RequestEnvelope
+	dat, err := ioutil.ReadFile("test/alexaGenreIntent.json")
+	check(err)
+	e := json.Unmarshal(dat, &request)
+	check(e)
+
+	sendAlexaCommand(request)
 }
 
 func createAlexaRequestEnvelope(movieName string) alexa.RequestEnvelope {
