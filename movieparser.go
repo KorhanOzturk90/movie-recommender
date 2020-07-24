@@ -25,6 +25,7 @@ const Recommended_movie_intent = "movieparserIntent"
 const Recommended_series_intent = "tvSeriesIntent"
 const Recommended_streaming_intent = "topstreamingIntent"
 const Recommended_genre_intent = "genreIntent"
+const Movie_detail_intent = "movieDetailIntent"
 const NO_GENRE_MOVIES = 5
 
 var (
@@ -127,6 +128,21 @@ func processAlexaIntent(request *alexa.Request, response *alexa.Response) error 
 		seriesName := request.Intent.Slots["series"].Value
 		log.Printf("tvSeries Intent triggered with %s", seriesName)
 		findRecommendations(request, seriesName, response)
+
+	case Movie_detail_intent:
+		movieName := request.Intent.Slots["movieName"].Value
+		movieId := getImdbIdFromMovieName(movieName)
+		if len(movieId) == 0 {
+			log.Printf("Could not find the movie %s in omdb..", movieName)
+			response.SetOutputText("Sorry, cannot find the movie " + movieName + " please make sure you use the correct name")
+			response.ShouldSessionEnd = false
+			return nil
+		}
+		selectedMovieDetails := getOmdbDetailedInfoFromId(movieId)
+		log.Printf("Movie details are returned for : %s", selectedMovieDetails.Title)
+		response.SetOutputText("Name a genre you'd like movie recommendations in please")
+		response.ShouldSessionEnd = false
+		return nil
 
 	case Recommended_genre_intent:
 		genre := request.Intent.Slots["genre"].Resolutions.ResolutionsPerAuthority[0].Values[0].Value.Name
