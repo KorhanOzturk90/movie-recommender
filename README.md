@@ -8,7 +8,7 @@ This is a simple movie suggestion engine that recommends movies from IMDB simila
 ## Alexa Skill Link
 The algorithm can be used as an alexa skill from the following link:
 
-https://www.amazon.com/Koz-Software-movie-suggester/dp/B07L8CWZYN/ref=sr_1_1?ie=UTF8&qid=1546008961&sr=8-1&keywords=movie+suggester
+https://alexa-skills.amazon.com/apis/custom/skills/amzn1.ask.skill.27d938e4-00fb-462b-83fe-633ddcf27386/launch
 
 ### Building
 
